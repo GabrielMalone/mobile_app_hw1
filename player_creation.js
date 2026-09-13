@@ -14,9 +14,9 @@ import Begin from './assets/player_craeation_page/start.svg'
 function PlayerCreation() {
 
   const primaryColor = "#00ffaa";
-  const nameConfirmedColor = "#00ffaa";
+  const pressedColor = "#01C987";
   const bgColor = "#071410";
-  const blueColor = "#8af6d2";
+  const playColor = "#8af6d2";
   const buttonSize = 50;
   const maxPoints = 10;
 
@@ -24,7 +24,9 @@ function PlayerCreation() {
   // UseState Related Content
   //-----------------------------------------------------------------------
 
-  const [nameButtonColor, setNameButtonColor] = useState(primaryColor);
+  const [nameButtonColor, setNameButtonColor] = useState(playColor);
+  const [playButtonColor, setPlayButtonColor] = useState(playColor);
+  const [buttonEffectColor, setButtonEffectColor] = useState(primaryColor);
   const [nameSet, setNameSet] = useState(true);
   const [playerName, setPlayerName] = useState("");
   const [statPoints, setStatPoints] = useState(maxPoints);
@@ -128,6 +130,9 @@ function PlayerCreation() {
         setPoints(points - 1);
       }
     
+    
+    // pressed is a deconstructed field if you wrap a child of a 
+    // pressable in a function you can get the info about that child.   
 
     return(
       <View style={styles.innerButtonRow}>
@@ -137,11 +142,14 @@ function PlayerCreation() {
           style={styles.addSign}
           onPress={handleAdd}
         >
-          <AddButton 
-            width={buttonSize} 
-            height={buttonSize}
-            color={primaryColor}
-          />
+          { ( {pressed} ) => (
+              <AddButton 
+                width={buttonSize} 
+                height={buttonSize}
+                color={pressed ? pressedColor : primaryColor}
+              />
+            )
+          }
         </Pressable>
 
         <Pressable 
@@ -149,12 +157,16 @@ function PlayerCreation() {
           style={styles.addSign}
           onPress={handleSubtract}
         >
+        { ( {pressed} ) => (
           <RemoveButton 
             width={buttonSize} 
             height={buttonSize}
-            color={primaryColor}
+            color={pressed ? pressedColor : primaryColor}
           />
+          )
+        }
         </Pressable>
+    
 
         <Text style={styles.assignedPoints}>
           {points}
@@ -170,12 +182,13 @@ function PlayerCreation() {
     <View style={styles.playButtonContainer}>
       <Pressable
         title="BeginButton"
-        onPress={()=>{console.log("begin the game!")}}
+        onPressIn={()=>{setPlayButtonColor(pressedColor)}}
+        onPressOut={()=>{setPlayButtonColor(playColor)}}
       >
         <Begin 
           width={buttonSize * 3} 
           height={buttonSize * 3}
-          color={nameButtonColor}
+          color={playButtonColor}
           style={styles.beginStyle}
         />
       </Pressable>
@@ -198,8 +211,8 @@ function PlayerCreation() {
 
             <View style={styles.titleView}>
               <TestTube 
-                width={buttonSize} 
-                height={buttonSize}
+                width={buttonSize / 2} 
+                height={buttonSize / 2}
                 color={nameButtonColor}
               />
               <Text style={styles.titleText}>
@@ -359,7 +372,6 @@ const styles = StyleSheet.create({
   },
   beginStyle :{
     alignSelf: "center",
-    color: "#8af6d2",
     fontSize: 38,
     fontFamily: "Futura",
   },
