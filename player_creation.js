@@ -6,13 +6,19 @@ import NameButton from './assets/player_craeation_page/streamline-cyber--masks.s
 import IntelligenceButton from './assets/player_craeation_page/streamline-cyber--elephant.svg'
 import BeautyButton from './assets/player_craeation_page/streamline-cyber--dna-strand.svg'
 import LuckButton from './assets/player_craeation_page/streamline-cyber--cards-2.svg'
+import AddButton from './assets/player_craeation_page/streamline-cyber--add-hexagon-1.svg'
+import RemoveButton from './assets/player_craeation_page/streamline-cyber--remove-hexagon.svg'
+import TestTube from './assets/player_craeation_page/streamline-cyber--beaker-test-tube.svg'
+import Begin from './assets/player_craeation_page/start.svg'
 
 function PlayerCreation() {
 
-  const primaryColor = "#01C987";
+  const primaryColor = "#00ffaa";
   const nameConfirmedColor = "#00ffaa";
-  const bgColor = "#071410"
+  const bgColor = "#071410";
+  const blueColor = "#8af6d2";
   const buttonSize = 50;
+  const maxPoints = 10;
 
   //-----------------------------------------------------------------------
   // UseState Related Content
@@ -21,20 +27,25 @@ function PlayerCreation() {
   const [nameButtonColor, setNameButtonColor] = useState(primaryColor);
   const [nameSet, setNameSet] = useState(true);
   const [playerName, setPlayerName] = useState("");
+  const [statPoints, setStatPoints] = useState(maxPoints);
+  const [smartPoints, setSmartPoints] = useState(0);
+  const [beautyPoints, setBeautyPoints] = useState(0);
+  const [luckPoints, setLuckPoints] = useState(0);
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
   //-----------------------------------------------------------------------
   
-
   const handlePlayerNameButtonClick = () => {
-    console.log("player button clicked");
-    setNameSet(!nameSet);
-    nameSet ? 
-      setNameButtonColor(nameConfirmedColor) :
-      setNameButtonColor(primaryColor);
+    // console.log("player button clicked");
+    // setNameSet(!nameSet);
+    // nameSet ? 
+    //   setNameButtonColor(nameConfirmedColor) :
+    //   setNameButtonColor(primaryColor);
   }
-
+  
+  // actually probably not going to have these as buttons
+  // if more time they can explain what each skill does if press
   const playerNameButton = 
     <Pressable 
       onPressIn={handlePlayerNameButtonClick}
@@ -98,6 +109,79 @@ function PlayerCreation() {
       />
 
   //-----------------------------------------------------------------------
+
+  const increaseDecreaseAmnt = (points, setPoints) => {
+  
+    const handleAdd = () => {
+      if (statPoints <= 0){
+        return;
+      }
+      setPoints(points + 1);
+      setStatPoints(statPoints - 1);
+    }
+
+    const handleSubtract = () => {
+      if (points <= 0){
+        return;
+      }
+        setStatPoints(statPoints + 1);
+        setPoints(points - 1);
+      }
+    
+
+    return(
+      <View style={styles.innerButtonRow}>
+
+        <Pressable 
+          title="addButton"
+          style={styles.addSign}
+          onPress={handleAdd}
+        >
+          <AddButton 
+            width={buttonSize} 
+            height={buttonSize}
+            color={primaryColor}
+          />
+        </Pressable>
+
+        <Pressable 
+          title="RemoveButton"
+          style={styles.addSign}
+          onPress={handleSubtract}
+        >
+          <RemoveButton 
+            width={buttonSize} 
+            height={buttonSize}
+            color={primaryColor}
+          />
+        </Pressable>
+
+        <Text style={styles.assignedPoints}>
+          {points}
+        </Text>
+        
+      </View>
+    ); 
+  };
+
+  //-----------------------------------------------------------------------
+
+  const beginButton = 
+    <View style={styles.playButtonContainer}>
+      <Pressable
+        title="BeginButton"
+        onPress={()=>{console.log("begin the game!")}}
+      >
+        <Begin 
+          width={buttonSize * 3} 
+          height={buttonSize * 3}
+          color={nameButtonColor}
+          style={styles.beginStyle}
+        />
+      </Pressable>
+    </View> ;
+
+  //-----------------------------------------------------------------------
   // Player Creation JSX
   //-----------------------------------------------------------------------
     return (
@@ -113,7 +197,14 @@ function PlayerCreation() {
             />
 
             <View style={styles.titleView}>
-              <Text style={styles.titleText}>Create Player</Text>
+              <TestTube 
+                width={buttonSize} 
+                height={buttonSize}
+                color={nameButtonColor}
+              />
+              <Text style={styles.titleText}>
+                Create Player
+              </Text>
             </View>
               
             <View style={styles.buttonViews}>
@@ -121,36 +212,53 @@ function PlayerCreation() {
               <View style={styles.buttonRow}>
                 <View style={styles.buttonCol}>
                   {playerNameButton}
-                  <Text style={styles.buttonText}
-                    >Name
+                  <Text style={styles.buttonText}>
+                    Name
                   </Text>
                 </View>
                 {playerNameField}
               </View>
 
+              <View style={styles.buttonRow}>
                <View style={styles.buttonCol}>
                 {playerIntelligenceButton}
-                <Text style={styles.buttonText}
-                  >Smarts
+                <Text style={styles.buttonText}>
+                  Smarts
                 </Text>
               </View> 
+                {increaseDecreaseAmnt(smartPoints, setSmartPoints)}
+              </View>
+             
+              <View style={styles.buttonRow}>
+                <View style={styles.buttonCol}>
+                  {playerBeautyButton}
+                  <Text style={styles.buttonText}>
+                    Beauty
+                  </Text>                
+                </View>
+                  {increaseDecreaseAmnt(beautyPoints, setBeautyPoints)} 
+              </View>
 
-              <View style={styles.buttonCol}>
-                {playerBeautyButton}
-                <Text style={styles.buttonText}
-                  >Beauty
-                </Text>                
-              </View> 
+              <View style={styles.buttonRow}>
+                <View style={styles.buttonCol}>
+                  {playerLuckButton}
+                  <Text style={styles.buttonText}>
+                    Luck
+                  </Text>     
+                </View>
+                  {increaseDecreaseAmnt(luckPoints, setLuckPoints)} 
+              </View>
 
-              <View style={styles.buttonCol}>
-                {playerLuckButton}
-                <Text style={styles.buttonText}
-                  >Luck
+             {beginButton}
+
+            </View> 
+
+              <View style={styles.statView}>
+                <Text style={styles.statText}>
+                  {statPoints}
                 </Text>     
-
               </View> 
 
-            </View>
         </SafeAreaView>
 
     );
@@ -184,7 +292,7 @@ const styles = StyleSheet.create({
     fontFamily: "Futura",
   },
   buttonViews :{
-    flex: 0.5,
+    flex: 1,
     flexDirection: "column",
     alignSelf: "stretch",
     // borderWidth: 2,
@@ -202,7 +310,14 @@ const styles = StyleSheet.create({
   buttonRow:{
     flexDirection : "row",
     // borderWidth: 2,
-    // borderColor: "pink",
+    // borderColor: "orange",
+  },
+  innerButtonRow:{
+    flex: 1,
+    flexDirection : "row",
+    justifyContent: "center",
+    // borderWidth: 2,
+    // borderColor: "orange",
   },
   buttonText:{
     alignSelf: "center",
@@ -217,7 +332,43 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 20,
     fontFamily: "Futura",
-  }
+  },
+  statView :{
+    flexDirection: "row",
+    alignItems: "flex-end"
+  },
+  statText :{
+    color: "#01C987",
+    textAlign: "center",
+    fontSize: 100,
+    fontFamily: "Futura",
+    // borderWidth: 2,
+    // borderColor: "pink",
+  },
+  addSign : {
+    alignSelf: "center",
+    // borderWidth: 2,
+    // borderColor: "yellow",
+  },
+  assignedPoints :{
+    paddingLeft: 20,
+    color: "#01C987",
+    fontSize: 65,
+    fontFamily: "Futura",
+    minWidth: 100,
+  },
+  beginStyle :{
+    alignSelf: "center",
+    color: "#8af6d2",
+    fontSize: 38,
+    fontFamily: "Futura",
+  },
+  playButtonContainer:{
+    alignItems: "center",
+    // borderWidth: 2,
+    // borderColor: "orange",
+  },
+
 
 });
 
