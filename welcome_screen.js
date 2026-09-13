@@ -1,15 +1,39 @@
 import { View, Text, StyleSheet, Pressable} from "react-native";
 import BackgroundSvg from './assets/welcome_page/black_jack_attack.svg'; 
-import SpadeSvg from "./assets/welcome_page/spadeLogo.svg";
+import SpadeLogo from "./assets/welcome_page/SpadeLogo";
+import { useState } from "react";
 
-function WelcomeScreen() {
+
+function WelcomeScreen({navigation}) {
+
+  const defaultSpadeBgColor = "#01C987";
+  const defaultSpadeColor = "#071410";
+  const defaultSpadeSize = 150;
+
+  //-----------------------------------------------------------------------
+  // UseState Related Content
+  //-----------------------------------------------------------------------
+
+  const [spadeColor, setSpadeColor] = useState(defaultSpadeColor);
+  const [spadeBgColor, setSpadeBgColor] = useState(defaultSpadeBgColor);
+  const [spadeSize, setSpadeSize] = useState(defaultSpadeSize);
 
 
   //-----------------------------------------------------------------------
   // Welcome Screen Related Methods
   //-----------------------------------------------------------------------
   const handleSpadeButtonClick = () => {
-    console.log("Button Pressed!")
+    // we can probably access svg hex colors 
+    // and change them dynamically
+    // change svg size as well
+    setSpadeBgColor("#071410");
+    setSpadeColor("#01C987");
+  }
+
+  const handleSpadeButtonClickOff = () => {
+    setSpadeBgColor(defaultSpadeBgColor);
+    setSpadeColor(defaultSpadeColor);
+    navigation.navigate("PlayerCreation");
   }
 
   //-----------------------------------------------------------------------
@@ -27,15 +51,25 @@ function WelcomeScreen() {
 
             <View style={styles.rootContainer}>
                 <View style={styles.spadeButton}>
+
                   <Pressable 
-                    onPress={handleSpadeButtonClick}
+                    onPressIn={handleSpadeButtonClick}
+                    onPressOut={handleSpadeButtonClickOff}
                     title="enter"
                   >
-                    <SpadeSvg width={150} height={150} />
+                    <SpadeLogo 
+                      width={spadeSize} 
+                      height={spadeSize}
+                      circleColor={spadeBgColor}
+                      spadeColor={spadeColor} 
+                    />
                   </Pressable>
+
                 </View>
               <View style={styles.titleTextContainer}>
-                <Text style={styles.titleText}>BLACK JACK ATTACK</Text>
+                <Text style={styles.titleText}>
+                  BLACK JACK +
+                </Text>
               </View>
 
             </View> 
@@ -72,7 +106,7 @@ const styles = StyleSheet.create({
     //borderWidth: 2,
     alignSelf: "center",
     //borderColor: "green",
-    margin: 5,
+    margin: 15,
   },
   titleText: {
     fontSize: 22,
