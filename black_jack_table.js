@@ -30,7 +30,10 @@ function BlackJackTable() {
       <View style={styles.deckOfCards}>
         {deck.map((card, i)=>{
           // since we have an SVG
-          const CardImage = card.image;
+          const CardImage = 
+            card.turned ? 
+            card.image : 
+            card.backImage;
           return(
             <View 
               key={i}
@@ -54,6 +57,12 @@ function BlackJackTable() {
   //-----------------------------------------------------------------------
   // Player Creation JSX
   //-----------------------------------------------------------------------
+
+        // need to make dealer card area and player card area
+        // need to make deal button
+        // need to make hit and stay buttons
+        
+
     return (
         <SafeAreaView 
           style={styles.blackJackTableParent}
@@ -66,12 +75,6 @@ function BlackJackTable() {
               style={styles.svgBackground} 
           />
           {placeCardsOntable}
-          <CardBack 
-            style={styles.cardStack}
-            width={playingCardWidth}
-            height={playingCardHeight}
-          />
-
         </SafeAreaView>
 
     );
@@ -95,8 +98,8 @@ const styles = StyleSheet.create({
   },
   deckOfCards : {
     alignSelf: "center",
-    borderWidth: 2,
-    borderColor: "pink",
+    // borderWidth: 2,
+    // borderColor: "pink",
     position: "relative",
   },
   cardStack : {
