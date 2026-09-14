@@ -5,6 +5,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import WelcomeScreen from "./welcome_screen";
 import PlayerCreationScreen from "./player_creation";
+import BlackJackTable from "./black_jack_table";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,10 @@ export default function App() {
           <Stack.Screen
             name="PlayerCreation"
             component={PlayerCreationScreen}
+          />
+          <Stack.Screen
+            name="BlackJackTable"
+            component={BlackJackTable}
           />
         </Stack.Navigator>
       </NavigationContainer>

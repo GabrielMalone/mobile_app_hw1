@@ -3,7 +3,6 @@ import BackgroundSvg from './assets/welcome_page/black_jack_attack.svg';
 import SpadeLogo from "./assets/welcome_page/SpadeLogo";
 import { useState } from "react";
 
-
 function WelcomeScreen({navigation}) {
 
   const defaultSpadeBgColor = "#01C987";

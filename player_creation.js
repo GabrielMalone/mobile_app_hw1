@@ -11,7 +11,8 @@ import RemoveButton from './assets/player_craeation_page/streamline-cyber--remov
 import TestTube from './assets/player_craeation_page/streamline-cyber--beaker-test-tube.svg'
 import Begin from './assets/player_craeation_page/start.svg'
 
-function PlayerCreation() {
+
+function PlayerCreation({navigation}) {
 
   const primaryColor = "#00ffaa";
   const pressedColor = "#01C987";
@@ -178,12 +179,17 @@ function PlayerCreation() {
 
   //-----------------------------------------------------------------------
 
+  const handleBeginGameEvent= () => {
+    setPlayButtonColor(playColor);
+    navigation.navigate("BlackJackTable");
+  };
+
   const beginButton = 
     <View style={styles.playButtonContainer}>
       <Pressable
         title="BeginButton"
         onPressIn={()=>{setPlayButtonColor(pressedColor)}}
-        onPressOut={()=>{setPlayButtonColor(playColor)}}
+        onPressOut={handleBeginGameEvent}
       >
         <Begin 
           width={buttonSize * 3} 
