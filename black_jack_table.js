@@ -36,6 +36,7 @@ function BlackJackTable() {
   const [stayIconColor, setStayIconColor] = useState(defaultIconColor);
   const [resetIconColor, setResetIconColor] = useState(defaultIconColor);
   const [gameOver, setGameOver] = useState(false);
+  const [reset, setReset] = useState(false);
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
@@ -149,7 +150,7 @@ function BlackJackTable() {
         score += card_score;
       });
         setPlayerScore(score);
-
+        console.log("Player Score: " + score);
         if (score > 21){
           console.log("player busted!");
           setGameOver(true);
@@ -178,10 +179,11 @@ function BlackJackTable() {
         score += card_score;
       });
         setDealerScore(score);
-
+        console.log("Dealer Score: " + score);
         if (score > 21){
           console.log("dealer busted!");
           setGameOver(true);
+   
         } else if (score === 21) {
           console.log("dealer Black Jack!");
           setGameOver(true);
@@ -196,7 +198,7 @@ function BlackJackTable() {
 
   //-----------------------------------------------------------------------
   const dealCards = () => {
-
+    
     // new array for re-render
     const shuffledDeck = [...deck];
     shuffleDeck(shuffledDeck);
@@ -210,7 +212,10 @@ function BlackJackTable() {
     let card_3 = shuffledDeck.pop();
     let card_4 = shuffledDeck.pop();
 
-    card_4.turned = false;
+    card_1.turned = true;
+    card_2.turned = false;
+    card_3.turned = true;
+    card_4.turned = true;
 
     const newPlayerHand = [...playerHand, card_1, card_3];
     const newDealerHand = [...dealerHand, card_2, card_4];
@@ -229,21 +234,25 @@ function BlackJackTable() {
   const drawCard = (player) => {
 
     setHitIconColor(pressedIconColor);
-
     let cardDrawn = deck.pop();
+    cardDrawn.turned = true;
     setDeck([...deck]);
 
     switch(player){
       case "human":
+        
         const newPlayerHand = [...playerHand, cardDrawn];
         setPlayerHand(newPlayerHand);
         updateScore(newPlayerHand, "human");
 
         break;
       case "dealer":
-        const newDealerHand = [...dealerHand, cardDrawn];
-        setDealerHand(newDealerHand);
-        updateScore(newDealerHand, "dealer");
+
+        if (dealerScore < 17){
+          const newDealerHand = [...dealerHand, cardDrawn];
+          setDealerHand(newDealerHand);
+          updateScore(newDealerHand, "dealer");
+        }
 
         break;
       default:
@@ -254,14 +263,32 @@ function BlackJackTable() {
   //-----------------------------------------------------------------------
   const stayAction = () => {
     setStayIconColor(pressedIconColor);
-    // do something else
+
+    // give dealer chance to decide to hit again if they want
+    // probably use a while loop here
+
+    if (playerScore > dealerScore){
+      setPlayerScore("WIN");
+    } 
+    if (playerScore === dealerScore){
+      setPlayerScore("TIE");
+    } 
+    if (playerScore < dealerScore){
+      setPlayerScore("LOSE");
+    } 
+    
+    setGameOver(true);
+   
   }
 
   //-----------------------------------------------------------------------
   const hitButtonJSX = 
     <Pressable
       title="hit!"
-      onPressIn={() => drawCard("human")}
+      onPressIn={() => {
+        drawCard("human");
+        drawCard("dealer");
+      }}
       onPressOut={()=>{setHitIconColor(defaultIconColor)}}
     >
       <HitIcon 
@@ -287,28 +314,34 @@ function BlackJackTable() {
   ;
   //-----------------------------------------------------------------------
 
-  const resetAction = () => {
-
-    setGameOver(false);
+  const resetDeck = () => {
     setResetIconColor(pressedIconColor);
-    // reset hands
-    setPlayerHand([]);
-    setDealerHand([]);
     // reset deck
     const deckStart = createDeck();
-    setDeck(deckStart);
+    shuffleDeck(deckStart);
     // deal cards
-    // dealCards();
-    
+    setDeck(deckStart);
   }
-
+  //-----------------------------------------------------------------------
+  const resetHands = () => {
+    setPlayerHand([]);
+    setDealerHand([]);
+  }
  //-----------------------------------------------------------------------
 
   const resetButtonJSX = 
     <Pressable
       title="resetGame!"
-      onPressIn={resetAction}
-      onPressOut={()=>{setResetIconColor(defaultIconColor)}}
+      onPressIn={()=>{
+          setGameOver(false);
+          setReset(!reset);       // just need this to trigger a re-render
+          resetDeck();
+          resetHands();
+        }
+      }
+      onPressOut={()=>{
+        setResetIconColor(defaultIconColor);
+      }}
     >
       <ResetIcon 
         color={stayIconColor}
@@ -323,7 +356,7 @@ function BlackJackTable() {
 
     useEffect(()=>{
       dealCards();
-    },[]);
+    },[reset]);                                       // re-render on reset
 
     return (
       <SafeAreaView 
