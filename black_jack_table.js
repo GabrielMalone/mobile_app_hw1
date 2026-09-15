@@ -126,18 +126,39 @@ function BlackJackTable() {
 
     let score = 0;
 
-    hand.forEach((card) => {
-      // i need to set up cap of 10
-      // then think about how to handle ACES
-      // default 11. if player over 21, move to 1
-      score += card.rank;
-    });
-
     switch(player){
       case "human":
+      hand.forEach((card) => {
+        let card_score = 0
+        if (card.rank === 14) {
+          card_score = 11;
+          if (playerScore + card_score > 21){
+            card_score = 1;
+          }
+        } else if (card.rank >= 10) {
+          card_score = 10;
+        } else {
+          card_score = card.rank;
+        }
+        score += card_score;
+      });
         setPlayerScore(score);
         break;
       case "dealer":
+      hand.forEach((card) => {
+        let card_score = 0
+        if (card.rank === 14) {
+          card_score = 11;
+          if (dealerScore + card_score > 21){
+            card_score = 1;
+          }
+        } else if (card.rank >= 10) {
+          card_score = 10;
+        } else {
+          card_score = card.rank;
+        }
+        score += card_score;
+      });
         setDealerScore(score);
         break; 
       default:
@@ -247,6 +268,11 @@ function BlackJackTable() {
         </View>
         <HitIcon />
         {playerCards}
+        <Text
+          style={styles.playerScoreText}
+        >
+          {playerScore}
+        </Text>
       </SafeAreaView>
     );
 }
@@ -262,7 +288,7 @@ const styles = StyleSheet.create({
   },
   svgBackground: {
     position: "absolute",
-    bottom: -50,
+    bottom: -10,
     opacity: 0.4,
   },
   centerTableWrapper : {
@@ -317,6 +343,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderColor: "#01C987",
     position: "relative",
+  },
+  playerScoreText :{
+    color: "#01C987",
+    textAlign: "center",
+    fontSize: 100,
+    fontFamily: "Futura",
   },
 
 });
