@@ -5,6 +5,7 @@ import BackgroundSvg from './assets/player_craeation_page/player_creation_bg.svg
 import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
 import HitIcon from "./assets/table_assets/hit_icon";
+import StayIcon from "./assets/table_assets/stay_icon";
 
 
 
@@ -29,7 +30,6 @@ function BlackJackTable() {
   const [dealerHand, setDealerHand] = useState([]);
   const [playerScore, setPlayerScore] = useState(0);
   const [dealerScore, setDealerScore] = useState(0);
-  const [gameDealt, setGameDealt] = useState(false);
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
@@ -169,8 +169,6 @@ function BlackJackTable() {
 
   //-----------------------------------------------------------------------
   const dealCards = () => {
-    
-    setGameDealt(true);
 
     // new array for re-render
     const shuffledDeck = [...deck];
@@ -226,10 +224,24 @@ function BlackJackTable() {
 
   const hitButtonJSX = 
     <Pressable
+      title="hit!"
       onPress={() => drawCard("human")}
     >
       <HitIcon 
         color={"#01C987"}
+        width={100}
+        height={100}
+      />
+    </Pressable>
+  ;
+
+  const stayButtonJSX = 
+    <Pressable
+      title="stay!"
+      onPress={()=>{console.log("stay!")}}
+    >
+      <StayIcon 
+        color={"#019463"}
         width={100}
         height={100}
       />
@@ -265,6 +277,7 @@ function BlackJackTable() {
         <View style={styles.centerTableWrapper}>
           {deckOfCards}
           {hitButtonJSX}
+          {stayButtonJSX}
         </View>
         <HitIcon />
         {playerCards}
