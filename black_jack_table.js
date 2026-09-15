@@ -8,28 +8,33 @@ import HitIcon from "./assets/table_assets/hit_icon";
 import StayIcon from "./assets/table_assets/stay_icon";
 
 
+// luck modifier (sometimes the next card on the pile will be face up)
+// beauty modifier (sometimes the dealer will get confused and hit >= 17)
+// intelligence modifier you can get accurate liklihood of the next card being less than bust
 
 function BlackJackTable() {
 
   const playingCardWidth = 120;
   const playingCardHeight = 120 * (88/63);
-  const startingPlayerMoney = 100;
-  const houseMoneyStart = 10000000;
   const deltCardOffset = 20;
   const deckStart = createDeck();
+  const defaultIconColor = "#02895c";
+  const pressedIconColor = "#01C987";
+
+  let dealerHasStayed = false;
+  
 
   //-----------------------------------------------------------------------
   // UseState Related Content
   //-----------------------------------------------------------------------
 
-  const [totalPot, setTotalPot] = useState(0);
-  const [playerMoney, setPlayerMoney] = useState(startingPlayerMoney);
-  const [houseMoney, setHouseMoney] = useState(houseMoneyStart);
   const [deck, setDeck] = useState(deckStart);
   const [playerHand, setPlayerHand] = useState([]);
   const [dealerHand, setDealerHand] = useState([]);
   const [playerScore, setPlayerScore] = useState(0);
   const [dealerScore, setDealerScore] = useState(0);
+  const [hitIconColor, setHitIconColor] = useState(defaultIconColor);
+  const [stayIconColor, setStayIconColor] = useState(defaultIconColor);
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
@@ -200,11 +205,12 @@ function BlackJackTable() {
   //-----------------------------------------------------------------------
 
   const drawCard = (player) => {
-    // pull out the card
-    // and update the deck
+
+    setHitIconColor(pressedIconColor);
+
     let cardDrawn = deck.pop();
     setDeck([...deck]);
-    // who is drawing the card
+
     switch(player){
       case "human":
         const newPlayerHand = [...playerHand, cardDrawn];
@@ -222,26 +228,33 @@ function BlackJackTable() {
 
   }
 
+  const stayAction = () => {
+    setStayIconColor(pressedIconColor);
+  }
+
+  //-----------------------------------------------------------------------
   const hitButtonJSX = 
     <Pressable
       title="hit!"
-      onPress={() => drawCard("human")}
+      onPressIn={() => drawCard("human")}
+      onPressOut={()=>{setHitIconColor(defaultIconColor)}}
     >
       <HitIcon 
-        color={"#01C987"}
+        color={hitIconColor}
         width={100}
         height={100}
       />
     </Pressable>
   ;
-
+  //-----------------------------------------------------------------------
   const stayButtonJSX = 
     <Pressable
       title="stay!"
-      onPress={()=>{console.log("stay!")}}
+      onPressIn={stayAction}
+      onPressOut={()=>{setStayIconColor(defaultIconColor)}}
     >
       <StayIcon 
-        color={"#019463"}
+        color={stayIconColor}
         width={100}
         height={100}
       />
@@ -252,12 +265,6 @@ function BlackJackTable() {
   // BJ Table JSX
   //-----------------------------------------------------------------------
 
-        // need to make deal button -- can just deal automatically actually
-        // need to make hit and stay buttons
-        // score area
-        // then game loop with simple AI for dealer (hit if below 17)
-        // just do simple fixed win lose amount
-        // then can go into 
     useEffect(()=>{
       dealCards();
     },[]);
