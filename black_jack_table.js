@@ -45,7 +45,7 @@ function BlackJackTable() {
   // Player Creation Related Content / Methods
   //-----------------------------------------------------------------------
 
-    const dealerShowCqrds = (hand) => {
+  const dealerShowCqrds = (hand=dealerHand) => {
     let revealedHand = hand.map((card)=>{
       return {...card, turned : true }
     });
@@ -180,13 +180,13 @@ function BlackJackTable() {
         if (score > 21){
           console.log("player busted!");
           setGameOver(true);
-          dealerShowCqrds(hand);
+          dealerShowCqrds();
           setPlayerScore("BUSTED");
           
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
-          dealerShowCqrds(hand);
+          dealerShowCqrds();
           setGameOver(true);
         } 
 
@@ -199,12 +199,12 @@ function BlackJackTable() {
         }
         if (score > 21){
           console.log("dealer busted!");
-          dealerShowCqrds(hand);
+          dealerShowCqrds();
           setGameOver(true);
    
         } else if (score === 21) {
           console.log("dealer Black Jack!");
-          dealerShowCqrds(hand);
+          dealerShowCqrds();
           setGameOver(true);
         } 
 
@@ -283,8 +283,7 @@ function BlackJackTable() {
   //-----------------------------------------------------------------------
   const stayAction =  () => {
     setStayIconColor(pressedIconColor);
-    // give dealer chance to decide to hit again if they want
-    // probably use a while loop here
+
     let currentDealerHand = [...dealerHand];
     let currentDeck = [...deck];
     let currentDealerScore = dealerScore;
@@ -301,7 +300,6 @@ function BlackJackTable() {
     if (dealerScore > 21){
       setPlayerScore("WIN"); 
     }
-
     if (playerScore > dealerScore){
       setPlayerScore("WIN");
     } 
@@ -418,7 +416,6 @@ function BlackJackTable() {
           {gameOver ? resetButtonJSX : hitButtonJSX}
           {gameOver ? null : stayButtonJSX}
         </View>
-        <HitIcon />
         {playerCards}
         <Text
           style={styles.playerScoreText}
