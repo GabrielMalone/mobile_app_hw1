@@ -10,8 +10,10 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 
 
 // luck modifier (sometimes the next card on the pile will be face up)
-// beauty modifier (sometimes the dealer will get confused and hit >= 17)
+// beauty modifier (sometimes the dealer will get confused and hit >= 17) or show their first card
 // intelligence modifier you can get accurate liklihood of the next card being less than bust
+
+// to do -> show dealer cards and score at gomeover
 
 function BlackJackTable() {
 
@@ -154,11 +156,13 @@ function BlackJackTable() {
         if (score > 21){
           console.log("player busted!");
           setGameOver(true);
+          // to do : set dealer cards all visible
           setPlayerScore("BUSTED");
           
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
+          // to do : set dealer cards all visible
           setGameOver(true);
         } 
 
@@ -182,10 +186,12 @@ function BlackJackTable() {
         console.log("Dealer Score: " + score);
         if (score > 21){
           console.log("dealer busted!");
+          // to do : set dealer cards all visible
           setGameOver(true);
    
         } else if (score === 21) {
           console.log("dealer Black Jack!");
+          // to do : set dealer cards all visible
           setGameOver(true);
         } 
 
@@ -277,6 +283,8 @@ function BlackJackTable() {
       setPlayerScore("LOSE");
     } 
     
+    // flip over all of dealer cards
+
     setGameOver(true);
    
   }
