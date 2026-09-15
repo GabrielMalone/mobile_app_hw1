@@ -6,6 +6,7 @@ import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
 import HitIcon from "./assets/table_assets/hit_icon";
 import StayIcon from "./assets/table_assets/stay_icon";
+import ResetIcon from "./assets/table_assets/reset_icon";
 
 
 // luck modifier (sometimes the next card on the pile will be face up)
@@ -21,8 +22,6 @@ function BlackJackTable() {
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
 
-  let dealerHasStayed = false;
-  
 
   //-----------------------------------------------------------------------
   // UseState Related Content
@@ -35,6 +34,8 @@ function BlackJackTable() {
   const [dealerScore, setDealerScore] = useState(0);
   const [hitIconColor, setHitIconColor] = useState(defaultIconColor);
   const [stayIconColor, setStayIconColor] = useState(defaultIconColor);
+  const [resetIconColor, setResetIconColor] = useState(defaultIconColor);
+  const [gameOver, setGameOver] = useState(false);
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
@@ -148,6 +149,18 @@ function BlackJackTable() {
         score += card_score;
       });
         setPlayerScore(score);
+
+        if (score > 21){
+          console.log("player busted!");
+          setGameOver(true);
+          setPlayerScore("BUSTED");
+          
+        } else if (score === 21) {
+          console.log("Player Black Jack!");
+          setPlayerScore("WIN");
+          setGameOver(true);
+        } 
+
         break;
       case "dealer":
       hand.forEach((card) => {
@@ -165,11 +178,20 @@ function BlackJackTable() {
         score += card_score;
       });
         setDealerScore(score);
+
+        if (score > 21){
+          console.log("dealer busted!");
+          setGameOver(true);
+        } else if (score === 21) {
+          console.log("dealer Black Jack!");
+          setGameOver(true);
+        } 
+
         break; 
       default:
         break;       
     }
-    console.log(player + " score: "  + score);
+
   }
 
   //-----------------------------------------------------------------------
@@ -216,20 +238,23 @@ function BlackJackTable() {
         const newPlayerHand = [...playerHand, cardDrawn];
         setPlayerHand(newPlayerHand);
         updateScore(newPlayerHand, "human");
+
         break;
       case "dealer":
         const newDealerHand = [...dealerHand, cardDrawn];
         setDealerHand(newDealerHand);
         updateScore(newDealerHand, "dealer");
+
         break;
       default:
         break;
     }
-
   }
 
+  //-----------------------------------------------------------------------
   const stayAction = () => {
     setStayIconColor(pressedIconColor);
+    // do something else
   }
 
   //-----------------------------------------------------------------------
@@ -260,7 +285,38 @@ function BlackJackTable() {
       />
     </Pressable>
   ;
+  //-----------------------------------------------------------------------
 
+  const resetAction = () => {
+
+    setGameOver(false);
+    setResetIconColor(pressedIconColor);
+    // reset hands
+    setPlayerHand([]);
+    setDealerHand([]);
+    // reset deck
+    const deckStart = createDeck();
+    setDeck(deckStart);
+    // deal cards
+    // dealCards();
+    
+  }
+
+ //-----------------------------------------------------------------------
+
+  const resetButtonJSX = 
+    <Pressable
+      title="resetGame!"
+      onPressIn={resetAction}
+      onPressOut={()=>{setResetIconColor(defaultIconColor)}}
+    >
+      <ResetIcon 
+        color={stayIconColor}
+        width={200}
+        height={200}
+      />
+    </Pressable>
+  ;
   //-----------------------------------------------------------------------
   // BJ Table JSX
   //-----------------------------------------------------------------------
@@ -283,8 +339,8 @@ function BlackJackTable() {
         {dealerCards}
         <View style={styles.centerTableWrapper}>
           {deckOfCards}
-          {hitButtonJSX}
-          {stayButtonJSX}
+          {gameOver ? resetButtonJSX : hitButtonJSX}
+          {gameOver ? null : stayButtonJSX}
         </View>
         <HitIcon />
         {playerCards}
