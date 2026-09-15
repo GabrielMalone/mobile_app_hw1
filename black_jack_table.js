@@ -14,6 +14,7 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 // intelligence modifier you can get accurate liklihood of the next card being less than bust
 
 // to do -> show dealer cards and score at gomeover
+// create dealer draw loop for when player stays 
 
 function BlackJackTable() {
 
@@ -42,6 +43,14 @@ function BlackJackTable() {
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
+  //-----------------------------------------------------------------------
+
+    const dealerShowCqrds = () => {
+    let revealedHand = dealerHand.map((card)=>{
+      return {...card, turned : true }
+    });
+    setDealerHand(revealedHand);
+  }
   //-----------------------------------------------------------------------
 
   const deckOfCards =
@@ -156,13 +165,13 @@ function BlackJackTable() {
         if (score > 21){
           console.log("player busted!");
           setGameOver(true);
-          // to do : set dealer cards all visible
+          dealerShowCqrds();
           setPlayerScore("BUSTED");
           
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
-          // to do : set dealer cards all visible
+          dealerShowCqrds();
           setGameOver(true);
         } 
 
@@ -186,12 +195,12 @@ function BlackJackTable() {
         console.log("Dealer Score: " + score);
         if (score > 21){
           console.log("dealer busted!");
-          // to do : set dealer cards all visible
+          dealerShowCqrds();
           setGameOver(true);
    
         } else if (score === 21) {
           console.log("dealer Black Jack!");
-          // to do : set dealer cards all visible
+          dealerShowCqrds();
           setGameOver(true);
         } 
 
@@ -284,10 +293,13 @@ function BlackJackTable() {
     } 
     
     // flip over all of dealer cards
-
+    dealerShowCqrds();
     setGameOver(true);
    
   }
+  //-----------------------------------------------------------------------
+  
+
 
   //-----------------------------------------------------------------------
   const hitButtonJSX = 
