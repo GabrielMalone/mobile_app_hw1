@@ -65,7 +65,7 @@ const createDeck = () => {
                 suit: suit[i], 
                 rank: j, 
                 image: getCardImage(suit[i], j),
-                turned: false,
+                turned: true,
                 backImage: CardBacK
             }
             deck.push(card);
