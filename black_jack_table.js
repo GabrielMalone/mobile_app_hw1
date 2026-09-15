@@ -13,8 +13,8 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 // beauty modifier (sometimes the dealer will get confused and hit >= 17) or show their first card
 // intelligence modifier you can get accurate liklihood of the next card being less than bust
 
-// to do -> show dealer cards and score at gomeover
-// create dealer draw loop for when player stays 
+// to do -> show dealer score at gomeover
+// get dealer loop to render correctly
 
 function BlackJackTable() {
 
@@ -45,12 +45,41 @@ function BlackJackTable() {
   // Player Creation Related Content / Methods
   //-----------------------------------------------------------------------
 
-    const dealerShowCqrds = () => {
-    let revealedHand = dealerHand.map((card)=>{
+    const dealerShowCqrds = (hand) => {
+    let revealedHand = hand.map((card)=>{
       return {...card, turned : true }
     });
     setDealerHand(revealedHand);
   }
+  //-----------------------------------------------------------------------
+  const calculateScore = (hand) => {
+
+    let score = 0;
+    let aceCount = 0;
+
+    hand.forEach((card) => {
+
+      if (card.rank === 14) {
+        score += 11;
+        aceCount++;
+      } 
+      else if (card.rank >= 10) {
+        score += 10;
+      } 
+      else {
+        score += card.rank;
+      }
+
+    });
+
+    // change an Ace from 11 to 1 if busting
+    while (score > 21 && aceCount > 0) {
+      score -= 10;
+      aceCount--;
+    }
+
+    return score;
+  };
   //-----------------------------------------------------------------------
 
   const deckOfCards =
@@ -142,65 +171,40 @@ function BlackJackTable() {
   
   const updateScore = (hand, player) => {
 
-    let score = 0;
+    let score = calculateScore(hand);
 
     switch(player){
       case "human":
-      hand.forEach((card) => {
-        let card_score = 0
-        if (card.rank === 14) {
-          card_score = 11;
-          if (playerScore + card_score > 21){
-            card_score = 1;
-          }
-        } else if (card.rank >= 10) {
-          card_score = 10;
-        } else {
-          card_score = card.rank;
-        }
-        score += card_score;
-      });
         setPlayerScore(score);
         console.log("Player Score: " + score);
         if (score > 21){
           console.log("player busted!");
           setGameOver(true);
-          dealerShowCqrds();
+          dealerShowCqrds(hand);
           setPlayerScore("BUSTED");
           
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
-          dealerShowCqrds();
+          dealerShowCqrds(hand);
           setGameOver(true);
         } 
 
         break;
       case "dealer":
-      hand.forEach((card) => {
-        let card_score = 0
-        if (card.rank === 14) {
-          card_score = 11;
-          if (dealerScore + card_score > 21){
-            card_score = 1;
-          }
-        } else if (card.rank >= 10) {
-          card_score = 10;
-        } else {
-          card_score = card.rank;
-        }
-        score += card_score;
-      });
         setDealerScore(score);
         console.log("Dealer Score: " + score);
+        if (score > 17){
+          return;
+        }
         if (score > 21){
           console.log("dealer busted!");
-          dealerShowCqrds();
+          dealerShowCqrds(hand);
           setGameOver(true);
    
         } else if (score === 21) {
           console.log("dealer Black Jack!");
-          dealerShowCqrds();
+          dealerShowCqrds(hand);
           setGameOver(true);
         } 
 
@@ -250,7 +254,8 @@ function BlackJackTable() {
 
     setHitIconColor(pressedIconColor);
     let cardDrawn = deck.pop();
-    cardDrawn.turned = true;
+    if (cardDrawn)
+      cardDrawn.turned = true;
     setDeck([...deck]);
 
     switch(player){
@@ -276,11 +281,26 @@ function BlackJackTable() {
   }
 
   //-----------------------------------------------------------------------
-  const stayAction = () => {
+  const stayAction =  () => {
     setStayIconColor(pressedIconColor);
-
     // give dealer chance to decide to hit again if they want
     // probably use a while loop here
+    let currentDealerHand = [...dealerHand];
+    let currentDeck = [...deck];
+    let currentDealerScore = dealerScore;
+    
+    while (currentDealerScore < 17) {
+      
+      let cardDrawn = currentDeck.pop();
+      cardDrawn.turned = true;
+      currentDealerHand = [...currentDealerHand, cardDrawn];
+      currentDealerScore = calculateScore(currentDealerHand);
+      console.log("dealer hitting: " + currentDealerScore);
+    }
+
+    if (dealerScore > 21){
+      setPlayerScore("WIN"); 
+    }
 
     if (playerScore > dealerScore){
       setPlayerScore("WIN");
@@ -291,11 +311,14 @@ function BlackJackTable() {
     if (playerScore < dealerScore){
       setPlayerScore("LOSE");
     } 
-    
+
+    setDeck([...currentDeck]);
+    setDealerScore(currentDealerScore);
+
     // flip over all of dealer cards
-    dealerShowCqrds();
+    dealerShowCqrds(currentDealerHand);
     setGameOver(true);
-   
+  
   }
   //-----------------------------------------------------------------------
   
