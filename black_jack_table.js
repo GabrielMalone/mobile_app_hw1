@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import BackgroundSvg from './assets/player_craeation_page/player_creation_bg.svg'; 
 import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
-import DealHandIcon from './assets/player_craeation_page/deal.svg'
+import HitIcon from "./assets/table_assets/hit_icon";
 
 
 
@@ -35,32 +35,32 @@ function BlackJackTable() {
   // Player Creation Related Content / Methods
   //-----------------------------------------------------------------------
 
-  // const placeCardsOntable =
-  //   <View style={styles.deckOfCards}>
-  //     {deck.map((card, i)=>{
-  //       // since we have an SVG
-  //       const CardImage = 
-  //         card.turned ? 
-  //         card.image : 
-  //         card.backImage;
-  //       return(
-  //         <View 
-  //           key={i}
-  //           style={[styles.cardStack, 
-  //             {
-  //               bottom: (i) * 0.25,
-  //               right: (i) * 0.25
-  //             }
-  //           ]}
-  //         >
-  //           <CardImage
-  //             height={playingCardHeight}
-  //             width={playingCardWidth}
-  //           />
-  //         </View>
-  //       );
-  //     })}
-  //   </View>;
+  const deckOfCards =
+    <View style={styles.deckOfCards}>
+      {deck.map((card, i)=>{
+        // since we have an SVG
+        const CardImage = 
+          card.turned ? 
+          card.image : 
+          card.backImage;
+        return(
+          <View 
+            key={i}
+            style={[styles.cardStack, 
+              {
+                bottom: (i) * 0.25,
+                right: (i) * 0.25
+              }
+            ]}
+          >
+            <CardImage
+              height={playingCardHeight}
+              width={playingCardWidth}
+            />
+          </View>
+        );
+      })}
+    </View>;
 
   //-----------------------------------------------------------------------
   const playerCards =
@@ -164,7 +164,7 @@ function BlackJackTable() {
     let card_3 = shuffledDeck.pop();
     let card_4 = shuffledDeck.pop();
 
-    card_2.turned = false;
+    card_4.turned = false;
 
     const newPlayerHand = [...playerHand, card_1, card_3];
     const newDealerHand = [...dealerHand, card_2, card_4];
@@ -177,6 +177,43 @@ function BlackJackTable() {
     updateScore(newDealerHand, "dealer");
 
   }
+
+  //-----------------------------------------------------------------------
+
+  const drawCard = (player) => {
+    // pull out the card
+    // and update the deck
+    let cardDrawn = deck.pop();
+    setDeck([...deck]);
+    // who is drawing the card
+    switch(player){
+      case "human":
+        const newPlayerHand = [...playerHand, cardDrawn];
+        setPlayerHand(newPlayerHand);
+        updateScore(newPlayerHand, "human");
+        break;
+      case "dealer":
+        const newDealerHand = [...dealerHand, cardDrawn];
+        setDealerHand(newDealerHand);
+        updateScore(newDealerHand, "dealer");
+        break;
+      default:
+        break;
+    }
+
+  }
+
+  const hitButtonJSX = 
+    <Pressable
+      onPress={() => drawCard("human")}
+    >
+      <HitIcon 
+        color={"#01C987"}
+        width={100}
+        height={100}
+      />
+    </Pressable>
+  ;
 
   //-----------------------------------------------------------------------
   // BJ Table JSX
@@ -205,8 +242,10 @@ function BlackJackTable() {
         />
         {dealerCards}
         <View style={styles.centerTableWrapper}>
-   
+          {deckOfCards}
+          {hitButtonJSX}
         </View>
+        <HitIcon />
         {playerCards}
       </SafeAreaView>
     );
@@ -232,8 +271,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    // border: 2,
-    // color : "orange"
+    border: 2,
+    color : "orange"
   },
   deckOfCards : {
     flex: 1,
