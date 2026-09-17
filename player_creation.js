@@ -37,8 +37,6 @@ function PlayerCreation({
 
   const [nameButtonColor, setNameButtonColor] = useState(playColor);
   const [playButtonColor, setPlayButtonColor] = useState(playColor);
-  const [buttonEffectColor, setButtonEffectColor] = useState(primaryColor);
-  const [nameSet, setNameSet] = useState(true);
   const [statPoints, setStatPoints] = useState(maxPoints);
 
 

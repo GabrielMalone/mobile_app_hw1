@@ -16,17 +16,15 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 // to do -> show dealer score at gomeover
 // get dealer loop to render correctly
 
-function BlackJackTable(
-    navigation,
-    playerName,
-    setPlayerName,
-    smartPoints,
-    setSmartPoints,
-    beautyPoints,
-    setBeautyPoints,
-    luckPoints,
-    setLuckPoints
-) {
+function BlackJackTable({
+  playerName,
+  smartPoints,
+  navigation,
+  beautyPoints,
+  luckPoints,
+  }) {
+
+  console.log(playerName, smartPoints, beautyPoints, luckPoints );
 
   const playingCardWidth = 120;
   const playingCardHeight = 120 * (88/63);
