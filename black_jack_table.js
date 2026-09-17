@@ -32,7 +32,6 @@ function BlackJackTable({
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
 
-  const firstRender = useRef(true);
   const firstDeal = useRef(true);
 
 
@@ -106,7 +105,7 @@ function BlackJackTable({
             style={[styles.cardStack, 
               {
                 bottom: (i) * 0.25,
-                right: (i) * 0.25
+                left: (i) * 0.25
               }
             ]}
           >
@@ -240,30 +239,34 @@ function BlackJackTable({
     // new array for re-render
     const shuffledDeck = [...deck];
     shuffleDeck(shuffledDeck);
+    shuffleDeck(shuffledDeck);
+    shuffleDeck(shuffledDeck);
+    shuffleDeck(shuffledDeck);
+    shuffleDeck(shuffledDeck);
     setDeck(shuffledDeck);
 
-    // give two cards to human
-    // give two cards to dealer
+    // // give two cards to human
+    // // give two cards to dealer
 
-    let card_1 = shuffledDeck.pop();
-    let card_2 = shuffledDeck.pop();
-    let card_3 = shuffledDeck.pop();
-    let card_4 = shuffledDeck.pop();
+    // let card_1 = shuffledDeck.pop();
+    // let card_2 = shuffledDeck.pop();
+    // let card_3 = shuffledDeck.pop();
+    // let card_4 = shuffledDeck.pop();
 
-    card_1.turned = true;
-    card_2.turned = false;
-    card_3.turned = true;
-    card_4.turned = true;
+    // card_1.turned = true;
+    // card_2.turned = false;
+    // card_3.turned = true;
+    // card_4.turned = true;
 
-    const newPlayerHand = [...playerHand, card_1, card_3];
-    const newDealerHand = [...dealerHand, card_2, card_4];
+    // const newPlayerHand = [...playerHand, card_1, card_3];
+    // const newDealerHand = [...dealerHand, card_2, card_4];
 
-    setPlayerHand(newPlayerHand);
-    setDealerHand(newDealerHand);
+    setPlayerHand([]);
+    setDealerHand([]);
     setDeck([...shuffledDeck]);
 
-    updateScore(newPlayerHand, "human");
-    updateScore(newDealerHand, "dealer");
+    updateScore([], "human");
+    updateScore([], "dealer");
 
   }
 
@@ -271,14 +274,9 @@ function BlackJackTable({
 
   const drawCard = (player) => {
 
-    if (firstDeal.current){
-      dealCards();
-      console.log("we here?");
-      firstDeal.current = false;
-      return;
-    }
-
     setHitIconColor(pressedIconColor);
+
+
     let cardDrawn = deck.pop();
     if (cardDrawn)
       cardDrawn.turned = true;
@@ -293,7 +291,10 @@ function BlackJackTable({
 
         break;
       case "dealer":
-
+        if (firstDeal.current){
+          firstDeal.current = false;
+          cardDrawn.turned = false;
+        }
         if (dealerScore < 17){
           const newDealerHand = [...dealerHand, cardDrawn];
           setDealerHand(newDealerHand);
@@ -308,6 +309,7 @@ function BlackJackTable({
 
   //-----------------------------------------------------------------------
   const stayAction =  () => {
+
     setStayIconColor(pressedIconColor);
 
     let currentDealerHand = [...dealerHand];
@@ -431,11 +433,7 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
 
     useEffect(()=>{
-      if (firstRender.current){
-        // cant use regular let var here since would get reset every render
-        firstRender.current = false;
-        return;
-      }
+      firstDeal.current = true;
       dealCards();
     },[reset]);                                       // re-render on reset
 
@@ -454,7 +452,7 @@ function BlackJackTable({
         <View style={styles.centerTableWrapper}>
           {deckOfCards}
           {gameOver ? resetButtonJSX : hitButtonJSX}
-          {gameOver ? null : stayButtonJSX}
+          {gameOver || firstDeal.current ? null : stayButtonJSX}
         </View>
         {playerCards}
         <Text
@@ -488,14 +486,10 @@ const styles = StyleSheet.create({
     padding:  10,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    border: 2,
-    color : "orange"
   },
   deckOfCards : {
-    flex: 1,
     marginTop: 200,
-    marginRight: 20, 
+    marginRight: 150, 
     // borderWidth: 2,
     // borderColor: "red",
     position: "relative",
