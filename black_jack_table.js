@@ -33,7 +33,6 @@ function BlackJackTable({
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
 
-
   //-----------------------------------------------------------------------
   // UseState Related Content
   //-----------------------------------------------------------------------
@@ -52,6 +51,7 @@ function BlackJackTable({
   const [gotLucky, setGotLucky] = useState(false);
   const [beautyEffect, setBeautyEffect] = useState("");
   const [smartsEffect, setSmartsEffect] = useState("");
+  const [gotPretty, setGotPretty] = useState(false);
   const firstDeal = useRef(true);
   
   //-----------------------------------------------------------------------
@@ -94,7 +94,11 @@ function BlackJackTable({
   const statsArea = 
     <View style={styles.statsAreaAndInfo}>
       <Text style={styles.statsAreaText}>{playerName}'s Talent Contributions</Text>
-      <Text style={styles.statsAreaText}>Beauty({beautyPoints}): {beautyEffect}</Text>
+      <Text style={gotPretty ? 
+        styles.statsAreaTextHighlighted : 
+        styles.statsAreaText}>
+          Beauty({beautyPoints}): {beautyEffect}
+        </Text>
       <Text style={styles.statsAreaText}>Smarts({smartPoints}): {smartsEffect}</Text>
       <Text 
         style={gotLucky ? 
@@ -293,13 +297,27 @@ function BlackJackTable({
     setSmartsEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
 
     // human hand stuff
+
+    // luck stuff 
+    // if lucky, find a card that can get you to blackjack (except aces)
     let curDeck = [...deck];
     let rndChance = Math.random();
     let luckChance = (luckPoints * Math.random()) / 10;
 
-    if (rndChance < luckChance && Math.random() < 0.5){
+    if (rndChance < luckChance && Math.random() < 0.8){
         console.log("lucky draw!");
         curDeck = rollLuck([...deck]);
+    }
+
+    // beauty stuff
+    // distract dealer and you can see his first card
+    if (dealerHand.length > 0){
+      let tmpDealerHand = [...dealerHand];
+      let firstCard = tmpDealerHand[tmpDealerHand.length - 1];
+      firstCard.turned = true;
+      setDealerHand([...tmpDealerHand]);
+      setBeautyEffect("Your hotness has flustered the Dealer");
+      setGotPretty(true);
     }
 
     let cardDrawn = curDeck.pop();
@@ -438,6 +456,7 @@ function BlackJackTable({
       setSmartsEffect("Are you Rainman?");
       setLuckEffect("Are you Lucky?");
       setGotLucky(false);
+      setGotPretty(false);
       dealCards();
     },[reset]);                                       // re-render on reset
 
@@ -539,7 +558,8 @@ const styles = StyleSheet.create({
     color: "#01C987",
     textAlign: "flex-begin",
     fontSize: 10,
-    fontFamily: "Futura",    
+    fontFamily: "Futura",  
+    
   },
   statsAreaTextHighlighted : {
     color: "#75ffd1",
