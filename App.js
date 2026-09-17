@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-  const [playerName, setPlayerName] = useState("");
+  const [playerName, setPlayerName] = useState("Player");
   const [smartPoints, setSmartPoints] = useState(0);
   const [beautyPoints, setBeautyPoints] = useState(0);
   const [luckPoints, setLuckPoints] = useState(0);

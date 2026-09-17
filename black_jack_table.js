@@ -2,12 +2,14 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { calculateScore } from "./game_components/score_calculator";
+import { cannedResponses } from "./game_components/canned_responses";
 import BackgroundSvg from './assets/player_craeation_page/player_creation_bg.svg'; 
 import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
 import HitIcon from "./assets/table_assets/hit_icon";
 import StayIcon from "./assets/table_assets/stay_icon";
 import ResetIcon from "./assets/table_assets/reset_icon";
+//-----------------------------------------------------------------------
 
 // to do -> show dealer score at gomeover
 // luck modifier (sometimes the next card on the pile will be face up)
@@ -31,6 +33,7 @@ function BlackJackTable({
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
 
+
   //-----------------------------------------------------------------------
   // UseState Related Content
   //-----------------------------------------------------------------------
@@ -45,8 +48,12 @@ function BlackJackTable({
   const [resetIconColor, setResetIconColor] = useState(defaultIconColor);
   const [gameOver, setGameOver] = useState(false);
   const [reset, setReset] = useState(false);
+  const [luckEffect, setLuckEffect] = useState("");
+  const [gotLucky, setGotLucky] = useState(false);
+  const [beautyEffect, setBeautyEffect] = useState("");
+  const [smartsEffect, setSmartsEffect] = useState("");
   const firstDeal = useRef(true);
-
+  
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
   //-----------------------------------------------------------------------
@@ -86,7 +93,16 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
   const statsArea = 
     <View style={styles.statsAreaAndInfo}>
-      <Text style={styles.statsAreaText}>Welcome {playerName}</Text>
+      <Text style={styles.statsAreaText}>{playerName}'s Talent Contributions</Text>
+      <Text style={styles.statsAreaText}>Beauty({beautyPoints}): {beautyEffect}</Text>
+      <Text style={styles.statsAreaText}>Smarts({smartPoints}): {smartsEffect}</Text>
+      <Text 
+        style={gotLucky ? 
+          styles.statsAreaTextHighlighted : 
+          styles.statsAreaText}
+        >
+          Luck({luckPoints}): {luckEffect}
+      </Text>
     </View>;
   //-----------------------------------------------------------------------
   const dealerScoreDisplay =
@@ -222,35 +238,91 @@ function BlackJackTable({
 
   }
   //-----------------------------------------------------------------------
-  const drawCard = (player) => {
+  // okay need to program a luck effect 
+  // if lucky then...we pick a card that gets you as close to 21 as possible
+  const rollLuck = (tmpDeck) => {
+
+    const hand = [...playerHand];
+    const curPlayerScore = calculateScore(hand);
+    const difference = 21 - curPlayerScore;
+    let luckyDeck = [...tmpDeck];
+    // if lucky can we pull a card that gets closer to blackjack
+
+    let luckyCardFound = false;
+    let luckCardIndex = 0;
+
+    // need to do logic for aces
+    for (let i = 0 ; i < luckyDeck.length ; i ++){
+
+      let card = luckyDeck[i];
+      let value = 0;
+      if (card.rank > 10){
+        value = 10;
+      } else{
+        value = card.rank;
+      }
+      if (value === difference) {
+        luckyCardFound = true;
+        luckCardIndex = i;
+        // actually at this point just swap this 
+        // card with the card at the back of the array
+        break;
+      }
+
+    }
+
+    // swap
+    if (luckyCardFound){
+      setLuckEffect("It's your lucky day!");
+      setGotLucky(true);
+      let tmpCard = luckyDeck[luckyDeck.length - 1];
+      luckyDeck[luckyDeck.length - 1] = luckyDeck[luckCardIndex];
+      luckyDeck[luckCardIndex] = tmpCard;
+    }
+
+    return luckyDeck;
+
+  }
+  //-----------------------------------------------------------------------
+  const drawCard = () => {
 
     setHitIconColor(pressedIconColor);
 
-    let cardDrawn = deck.pop();
-    if (cardDrawn)
-      cardDrawn.turned = true;
-    setDeck([...deck]);
+    setLuckEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
+    setBeautyEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
+    setSmartsEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
 
-    switch(player){
-      case "human":
-        const newPlayerHand = [...playerHand, cardDrawn];
-        setPlayerHand(newPlayerHand);
-        updateScore(newPlayerHand, "human");
-        break;
-      case "dealer":
-        if (firstDeal.current){
-          firstDeal.current = false;
-          cardDrawn.turned = false;
-        }
-        if (dealerScore < 17){
-          const newDealerHand = [...dealerHand, cardDrawn];
-          setDealerHand(newDealerHand);
-          updateScore(newDealerHand, "dealer");
-        }
-        break;
-      default:
-        break;
+    // human hand stuff
+    let curDeck = [...deck];
+    let rndChance = Math.random();
+    let luckChance = (luckPoints * Math.random()) / 10;
+
+    if (rndChance < luckChance && Math.random() < 0.5){
+        console.log("lucky draw!");
+        curDeck = rollLuck([...deck]);
     }
+
+    let cardDrawn = curDeck.pop();
+    cardDrawn.turned = true;
+    const newPlayerHand = [...playerHand, cardDrawn];
+    setPlayerHand(newPlayerHand);
+    updateScore(newPlayerHand, "human");
+
+    // dealer hand stuff
+    cardDrawn = curDeck.pop();
+    cardDrawn.turned = true;
+    if (firstDeal.current){
+        firstDeal.current = false;
+        cardDrawn.turned = false;
+    }
+    if (dealerScore < 17){
+      const newDealerHand = [...dealerHand, cardDrawn];
+      setDealerHand(newDealerHand);
+      updateScore(newDealerHand, "dealer");
+    }
+    setDeck([...curDeck]); 
+    
+
   }
   //-----------------------------------------------------------------------
   const stayAction =  () => {
@@ -299,18 +371,15 @@ function BlackJackTable({
     <Pressable
       title="hit!"
       onPressIn={() => {
-        drawCard("human");
-        drawCard("dealer");
+        drawCard();
       }}
       onPressOut={()=>{setHitIconColor(defaultIconColor)}}
     >
-      
       <HitIcon 
         color={hitIconColor}
         width={100}
         height={100}
       />
-
     </Pressable>;
   //-----------------------------------------------------------------------
   const stayButtonJSX = 
@@ -365,6 +434,10 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
     useEffect(()=>{
       firstDeal.current = true;
+      setBeautyEffect("Are You Hot?");
+      setSmartsEffect("Are you Rainman?");
+      setLuckEffect("Are you Lucky?");
+      setGotLucky(false);
       dealCards();
     },[reset]);                                       // re-render on reset
 
@@ -464,8 +537,14 @@ const styles = StyleSheet.create({
   },
   statsAreaText : {
     color: "#01C987",
-    textAlign: "center",
-    fontSize: 14,
+    textAlign: "flex-begin",
+    fontSize: 10,
+    fontFamily: "Futura",    
+  },
+  statsAreaTextHighlighted : {
+    color: "#75ffd1",
+    textAlign: "flex-begin",
+    fontSize: 10,
     fontFamily: "Futura",    
   },
   dealerScoreDisplayStyle : {
