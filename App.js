@@ -2,6 +2,7 @@ import { StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { useState } from "react";
 
 import WelcomeScreen from "./welcome_screen";
 import PlayerCreationScreen from "./player_creation";
@@ -11,9 +12,14 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
 
+  const [playerName, setPlayerName] = useState("");
+  const [smartPoints, setSmartPoints] = useState(0);
+  const [beautyPoints, setBeautyPoints] = useState(0);
+  const [luckPoints, setLuckPoints] = useState(0);
 
   return (
     <SafeAreaProvider>
+
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Welcome"
@@ -21,20 +27,43 @@ export default function App() {
             {headerShown: false}
           }
         >
+
           <Stack.Screen
             name="Welcome"
             component={WelcomeScreen}
           />
-          <Stack.Screen
-            name="PlayerCreation"
-            component={PlayerCreationScreen}
-          />
-          <Stack.Screen
-            name="BlackJackTable"
-            component={BlackJackTable}
-          />
+          <Stack.Screen name="PlayerCreation" >
+          {(props) => {
+            return (
+              <PlayerCreationScreen
+                {...props}
+                playerName={playerName}
+                setPlayerName={setPlayerName}
+                smartPoints={smartPoints}
+                setSmartPoints={setSmartPoints}
+                beautyPoints={beautyPoints}
+                setBeautyPoints={setBeautyPoints}
+                luckPoints={luckPoints}
+                setLuckPoints={setLuckPoints}
+              />
+            )}}
+          </Stack.Screen>
+          <Stack.Screen name="BlackJackTable">
+           {(props) => {
+            return (
+              <BlackJackTable
+                {...props}
+                playerName={playerName}
+                smartPoints={smartPoints}
+                beautyPoints={beautyPoints}
+                luckPoints={luckPoints}
+              />
+            )}}    
+          </Stack.Screen>
+
         </Stack.Navigator>
       </NavigationContainer>
+
     </SafeAreaProvider>
   );
 

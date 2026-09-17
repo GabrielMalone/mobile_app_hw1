@@ -16,7 +16,17 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 // to do -> show dealer score at gomeover
 // get dealer loop to render correctly
 
-function BlackJackTable() {
+function BlackJackTable(
+    navigation,
+    playerName,
+    setPlayerName,
+    smartPoints,
+    setSmartPoints,
+    beautyPoints,
+    setBeautyPoints,
+    luckPoints,
+    setLuckPoints
+) {
 
   const playingCardWidth = 120;
   const playingCardHeight = 120 * (88/63);
@@ -332,11 +342,13 @@ function BlackJackTable() {
       }}
       onPressOut={()=>{setHitIconColor(defaultIconColor)}}
     >
+      
       <HitIcon 
         color={hitIconColor}
         width={100}
         height={100}
       />
+
     </Pressable>
   ;
   //-----------------------------------------------------------------------
@@ -425,6 +437,9 @@ function BlackJackTable() {
       </SafeAreaView>
     );
 }
+
+
+
 
 //-----------------------------------------------------------------------
 // Style Sheet For Welcome Page

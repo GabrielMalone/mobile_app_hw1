@@ -17,7 +17,6 @@ function WelcomeScreen({navigation}) {
   const [spadeBgColor, setSpadeBgColor] = useState(defaultSpadeBgColor);
   const [spadeSize, setSpadeSize] = useState(defaultSpadeSize);
 
-
   //-----------------------------------------------------------------------
   // Welcome Screen Related Methods
   //-----------------------------------------------------------------------

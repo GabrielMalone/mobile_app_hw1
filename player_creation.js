@@ -12,7 +12,17 @@ import TestTube from './assets/player_craeation_page/streamline-cyber--beaker-te
 import Begin from './assets/player_craeation_page/start.svg'
 
 
-function PlayerCreation({navigation}) {
+function PlayerCreation({
+    navigation,
+    playerName,
+    setPlayerName,
+    smartPoints,
+    setSmartPoints,
+    beautyPoints,
+    setBeautyPoints,
+    luckPoints,
+    setLuckPoints
+}) {
 
   const primaryColor = "#00ffaa";
   const pressedColor = "#01C987";
@@ -29,11 +39,8 @@ function PlayerCreation({navigation}) {
   const [playButtonColor, setPlayButtonColor] = useState(playColor);
   const [buttonEffectColor, setButtonEffectColor] = useState(primaryColor);
   const [nameSet, setNameSet] = useState(true);
-  const [playerName, setPlayerName] = useState("");
   const [statPoints, setStatPoints] = useState(maxPoints);
-  const [smartPoints, setSmartPoints] = useState(0);
-  const [beautyPoints, setBeautyPoints] = useState(0);
-  const [luckPoints, setLuckPoints] = useState(0);
+
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
