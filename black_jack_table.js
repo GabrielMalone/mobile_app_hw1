@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BackgroundSvg from './assets/player_craeation_page/player_creation_bg.svg'; 
 import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
@@ -24,7 +24,6 @@ function BlackJackTable({
   luckPoints,
   }) {
 
-  console.log(playerName, smartPoints, beautyPoints, luckPoints );
 
   const playingCardWidth = 120;
   const playingCardHeight = 120 * (88/63);
@@ -32,6 +31,9 @@ function BlackJackTable({
   const deckStart = createDeck();
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
+
+  const firstRender = useRef(true);
+  const firstDeal = useRef(true);
 
 
   //-----------------------------------------------------------------------
@@ -118,8 +120,17 @@ function BlackJackTable({
     </View>;
 
   //-----------------------------------------------------------------------
+  const statsArea = 
+  
+  <View style={styles.statsAreaAndInfo}>
+    <Text style={styles.statsAreaText}>Welcome {playerName}</Text>
+  </View>
+  ;
+
+  //-----------------------------------------------------------------------
   const playerCards =
     <View style={styles.playerCardArea}>
+      {statsArea}
       <View style={styles.playerDeckOfCards}>
         {playerHand.map((card, i)=>{
           // since we have an SVG
@@ -260,6 +271,13 @@ function BlackJackTable({
 
   const drawCard = (player) => {
 
+    if (firstDeal.current){
+      dealCards();
+      console.log("we here?");
+      firstDeal.current = false;
+      return;
+    }
+
     setHitIconColor(pressedIconColor);
     let cardDrawn = deck.pop();
     if (cardDrawn)
@@ -305,22 +323,24 @@ function BlackJackTable({
       console.log("dealer hitting: " + currentDealerScore);
     }
 
+    let condition = "";
+
     if (dealerScore > 21){
-      setPlayerScore("WIN"); 
+      condition = "win"; 
     }
-    if (playerScore > dealerScore){
-      setPlayerScore("WIN");
+    else if (playerScore > currentDealerScore){
+      condition = "win";
     } 
-    if (playerScore === dealerScore){
-      setPlayerScore("TIE");
+    else if (playerScore === currentDealerScore){
+      condition = "tie";
     } 
-    if (playerScore < dealerScore){
-      setPlayerScore("LOSE");
+    else if (playerScore < currentDealerScore){
+      condition = "lose";
     } 
 
+    setPlayerScore(condition);
     setDeck([...currentDeck]);
     setDealerScore(currentDealerScore);
-
     // flip over all of dealer cards
     dealerShowCqrds(currentDealerHand);
     setGameOver(true);
@@ -401,11 +421,21 @@ function BlackJackTable({
       />
     </Pressable>
   ;
+
+  //-----------------------------------------------------------------------
+
+
+
   //-----------------------------------------------------------------------
   // BJ Table JSX
   //-----------------------------------------------------------------------
 
     useEffect(()=>{
+      if (firstRender.current){
+        // cant use regular let var here since would get reset every render
+        firstRender.current = false;
+        return;
+      }
       dealCards();
     },[reset]);                                       // re-render on reset
 
@@ -512,6 +542,20 @@ const styles = StyleSheet.create({
     fontSize: 100,
     fontFamily: "Futura",
   },
+  statsAreaAndInfo :{
+    flex: 1,
+    flexDirection: "column",
+    borderLeftWidth: 1,
+    borderRadius: 0,
+    borderColor: "#88ffd7",
+    alignSelf: "flex-end",
+  },
+  statsAreaText : {
+    color: "#01C987",
+    textAlign: "center",
+    fontSize: 14,
+    fontFamily: "Futura",    
+  }
 
 });
 
