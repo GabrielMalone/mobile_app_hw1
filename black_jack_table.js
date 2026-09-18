@@ -51,6 +51,7 @@ function BlackJackTable({
   const [gotLucky, setGotLucky] = useState(false);
   const [beautyEffect, setBeautyEffect] = useState("");
   const [smartsEffect, setSmartsEffect] = useState("");
+  const [drawn, setDrawn] = useState(false);
   const [gotPretty, setGotPretty] = useState(false);
   const firstDeal = useRef(true);
   
@@ -288,8 +289,22 @@ function BlackJackTable({
 
   }
   //-----------------------------------------------------------------------
+  const calculateBustOdds = () => {
+    let bustCards = 0;
+    // take all cards in the deck and see what happens if added to my hand
+    deck.forEach((card) => {
+      const testHand = [...playerHand, card];
+      if (calculateScore(testHand) > 21) {
+        bustCards++;
+      }
+    });
+    return bustCards / deck.length;
+  };
+  //-----------------------------------------------------------------------
   const drawCard = () => {
 
+
+    setDrawn(!drawn);
     setHitIconColor(pressedIconColor);
 
     setLuckEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
@@ -320,6 +335,8 @@ function BlackJackTable({
       setGotPretty(true);
     }
 
+    // lucky stuff
+
     let cardDrawn = curDeck.pop();
     cardDrawn.turned = true;
     const newPlayerHand = [...playerHand, cardDrawn];
@@ -339,9 +356,9 @@ function BlackJackTable({
       updateScore(newDealerHand, "dealer");
     }
     setDeck([...curDeck]); 
-    
-
   }
+
+
   //-----------------------------------------------------------------------
   const stayAction =  () => {
     setStayIconColor(pressedIconColor);
@@ -459,6 +476,10 @@ function BlackJackTable({
       setGotPretty(false);
       dealCards();
     },[reset]);                                       // re-render on reset
+
+    useEffect(()=>{
+      console.log(calculateBustOdds());
+    },[drawn]);
 
     return (
       <SafeAreaView 
