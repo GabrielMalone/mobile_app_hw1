@@ -53,6 +53,7 @@ function BlackJackTable({
   const [smartsEffect, setSmartsEffect] = useState("");
   const [drawn, setDrawn] = useState(false);
   const [gotPretty, setGotPretty] = useState(false);
+  const [gotSmart, setGotSmart] = useState(false);
   const firstDeal = useRef(true);
   
   //-----------------------------------------------------------------------
@@ -94,19 +95,23 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
   const statsArea = 
     <View style={styles.statsAreaAndInfo}>
-      <Text style={styles.statsAreaText}>{playerName}'s Talent Contributions</Text>
       <Text style={gotPretty ? 
         styles.statsAreaTextHighlighted : 
         styles.statsAreaText}>
           Beauty({beautyPoints}): {beautyEffect}
         </Text>
-      <Text style={styles.statsAreaText}>Smarts({smartPoints}): {smartsEffect}</Text>
+      <Text 
+        style={gotSmart ? 
+        styles.statsAreaTextHighlighted : 
+        styles.statsAreaText}
+      >
+        Smarts({smartPoints}): {smartsEffect}</Text>
       <Text 
         style={gotLucky ? 
           styles.statsAreaTextHighlighted : 
           styles.statsAreaText}
         >
-          Luck({luckPoints}): {luckEffect}
+          Luck__({luckPoints}): {luckEffect}
       </Text>
     </View>;
   //-----------------------------------------------------------------------
@@ -303,39 +308,36 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
   const drawCard = () => {
 
-
     setDrawn(!drawn);
     setHitIconColor(pressedIconColor);
-
     setLuckEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
-    setBeautyEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
-    setSmartsEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
-
+    setBeautyEffect("Your looks have no affect");
+    setSmartsEffect("You have no idea what you're doing");
     // human hand stuff
-
     // luck stuff 
     // if lucky, find a card that can get you to blackjack (except aces)
     let curDeck = [...deck];
     let rndChance = Math.random();
-    let luckChance = (luckPoints * Math.random()) / 10;
+    let luckChance = luckPoints / 10;
 
     if (rndChance < luckChance && Math.random() < 0.8){
         console.log("lucky draw!");
         curDeck = rollLuck([...deck]);
     }
-
     // beauty stuff
     // distract dealer and you can see his first card
-    if (dealerHand.length > 0){
+    rndChance = Math.random();
+    let beautyChance = beautyPoints / 10;
+
+    if (dealerHand.length > 0
+        && rndChance < beautyChance && Math.random() < 0.8
+    ){
       let tmpDealerHand = [...dealerHand];
-      let firstCard = tmpDealerHand[tmpDealerHand.length - 1];
-      firstCard.turned = true;
+      tmpDealerHand.forEach((card)=>card.turned=true);
       setDealerHand([...tmpDealerHand]);
-      setBeautyEffect("Your hotness has flustered the Dealer");
+      setBeautyEffect("Your flustered the Dealer!");
       setGotPretty(true);
     }
-
-    // lucky stuff
 
     let cardDrawn = curDeck.pop();
     cardDrawn.turned = true;
@@ -357,8 +359,6 @@ function BlackJackTable({
     }
     setDeck([...curDeck]); 
   }
-
-
   //-----------------------------------------------------------------------
   const stayAction =  () => {
     setStayIconColor(pressedIconColor);
@@ -474,12 +474,22 @@ function BlackJackTable({
       setLuckEffect("Are you Lucky?");
       setGotLucky(false);
       setGotPretty(false);
+      setGotSmart(false);
       dealCards();
     },[reset]);                                       // re-render on reset
 
-    useEffect(()=>{
-      console.log(calculateBustOdds());
-    },[drawn]);
+    useEffect(() => {
+      const trueOdds = calculateBustOdds();
+      const errorRange = ((10 - smartPoints) / 100) * (10-smartPoints);
+      const min = trueOdds - errorRange;
+      const max = trueOdds + errorRange;
+      const filteredOdds = min + Math.random() * (max - min);
+      const percentage = Math.round(filteredOdds * 100);
+      console.log(trueOdds);
+      setSmartsEffect(`Odds of Busting: ${percentage}%`);
+      setGotSmart(true);
+
+    }, [drawn]);
 
     return (
       <SafeAreaView 
@@ -570,22 +580,24 @@ const styles = StyleSheet.create({
     fontFamily: "Futura",
   },
   statsAreaAndInfo :{
-    flex: 1,
     flexDirection: "column",
     padding: 20,
     alignSelf: "flex-end",
+    zIndex: 10,
+    backgroundColor: "#001c13c2",
+    borderRadius: 10,
   },
   statsAreaText : {
-    color: "#01C987",
+    color: "#cfffef",
     textAlign: "flex-begin",
-    fontSize: 10,
+    fontSize: 15,
     fontFamily: "Futura",  
     
   },
   statsAreaTextHighlighted : {
     color: "#75ffd1",
     textAlign: "flex-begin",
-    fontSize: 10,
+    fontSize: 15,
     fontFamily: "Futura",    
   },
   dealerScoreDisplayStyle : {
