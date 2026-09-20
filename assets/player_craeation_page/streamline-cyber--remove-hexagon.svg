@@ -1,8 +1,4 @@
-<svg
-  viewBox="0 0 1024 1024"
-  xmlns="http://www.w3.org/2000/svg"
-  fill="currentColor"
->
-  <path d="M352 480h320a32 32 0 1 1 0 64H352a32 32 0 0 1 0-64z"/>
-  <path d="M512 896a384 384 0 1 0 0-768 384 384 0 0 0 0 768zm0 64a448 448 0 1 1 0-896 448 448 0 0 1 0 896z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 256 256">
+  <path d="M0 0h256v256H0z" fill="none" />
+  <path fill="currentColor" d="M172 128a4 4 0 0 1-4 4H88a4 4 0 0 1 0-8h80a4 4 0 0 1 4 4m56 0A100 100 0 1 1 128 28a100.11 100.11 0 0 1 100 100m-8 0a92 92 0 1 0-92 92a92.1 92.1 0 0 0 92-92" />
 </svg>

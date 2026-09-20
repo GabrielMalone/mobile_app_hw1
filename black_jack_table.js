@@ -3,6 +3,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect, useRef } from "react";
 import { calculateScore } from "./game_components/score_calculator";
 import { cannedResponses } from "./game_components/canned_responses";
+import { styles } from "./game_components/style";
+import AddButton from './assets/player_craeation_page/streamline-cyber--add-hexagon-1.svg'
+import RemoveButton from './assets/player_craeation_page/streamline-cyber--remove-hexagon.svg'
 import BackgroundSvg from './assets/player_craeation_page/player_creation_bg.svg'; 
 import createDeck from "./createDeck";
 import shuffleDeck from "./shuffle";
@@ -29,9 +32,12 @@ function BlackJackTable({
   const playingCardWidth = 120;
   const playingCardHeight = 120 * (88/63);
   const deltCardOffset = 20;
+  const buttonSize = 25;
   const deckStart = createDeck();
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
+  const primaryColor = "#00ffaa";
+  const pressedColor = "#01C987";
 
   //-----------------------------------------------------------------------
   // UseState Related Content
@@ -52,6 +58,8 @@ function BlackJackTable({
   const [beautyEffect, setBeautyEffect] = useState("");
   const [smartsEffect, setSmartsEffect] = useState("");
   const [drawn, setDrawn] = useState(false);
+  const [money, setMoney] = useState(100);
+  const [betAmnt, setBetAmnt] = useState(0);
   const [gotPretty, setGotPretty] = useState(false);
   const [gotSmart, setGotSmart] = useState(false);
   const firstDeal = useRef(true);
@@ -65,6 +73,59 @@ function BlackJackTable({
     });
     setDealerHand(revealedHand);
   }
+  //-----------------------------------------------------------------------
+  const handleIncreaseBet = () => {
+    let curBet = betAmnt;
+    curBet += 10;
+    if (curBet > money){
+      curBet = money;
+    }
+    setBetAmnt(curBet);
+  }
+  //-----------------------------------------------------------------------
+  const increaseBet = 
+      <Pressable 
+        title="increaseBetButton"
+        style={styles.addSign}
+        onPress={handleIncreaseBet}
+      >
+        { ( {pressed} ) => (
+            <AddButton 
+              width={buttonSize} 
+              height={buttonSize}
+              color={pressed ? pressedColor : primaryColor}
+            />
+          )
+        }
+      </Pressable>
+  ;
+  //-----------------------------------------------------------------------
+    //-----------------------------------------------------------------------
+  const handleDecreaseBet = () => {
+    let curBet = betAmnt;
+    curBet -= 10;
+    if (curBet < 0){
+      curBet = 0;
+    }
+    setBetAmnt(curBet);
+  }
+  //-----------------------------------------------------------------------
+  const decreaseBet = 
+      <Pressable 
+        title="decraseBetButton"
+        style={styles.minusSign}
+        onPress={handleDecreaseBet}
+      >
+        { ( {pressed} ) => (
+            <RemoveButton 
+              width={buttonSize} 
+              height={buttonSize}
+              color={pressed ? pressedColor : primaryColor}
+            />
+          )
+        }
+      </Pressable>
+  ;
   //-----------------------------------------------------------------------
   const deckOfCards =
     <View style={styles.deckOfCards}>
@@ -98,21 +159,41 @@ function BlackJackTable({
       <Text style={gotPretty ? 
         styles.statsAreaTextHighlighted : 
         styles.statsAreaText}>
-          Beauty({beautyPoints}): {beautyEffect}
+          Beauty ({beautyPoints}): {beautyEffect}
         </Text>
       <Text 
         style={gotSmart ? 
         styles.statsAreaTextHighlighted : 
         styles.statsAreaText}
       >
-        Smarts({smartPoints}): {smartsEffect}</Text>
+        Smarts ({smartPoints}): {smartsEffect}</Text>
       <Text 
         style={gotLucky ? 
           styles.statsAreaTextHighlighted : 
           styles.statsAreaText}
         >
-          Luck__({luckPoints}): {luckEffect}
+          Luck ({luckPoints}): {luckEffect}
       </Text>
+      <View
+        style={styles.moneyArea}
+      >
+        <Text
+        style={styles.statsAreaMoney}
+        >
+          ${money}
+        </Text>
+          <View
+            style={styles.betArea}
+          >
+          <Text
+            style={styles.statsAreaBet}
+          >
+            ${betAmnt}
+          </Text>
+          {increaseBet}
+          {decreaseBet}
+        </View>
+      </View>
     </View>;
   //-----------------------------------------------------------------------
   const dealerScoreDisplay =
@@ -310,8 +391,8 @@ function BlackJackTable({
 
     setDrawn(!drawn);
     setHitIconColor(pressedIconColor);
-    setLuckEffect(cannedResponses[Math.floor(Math.random() * cannedResponses.length)]);
-    setBeautyEffect("Your looks have no affect");
+    setLuckEffect("no");
+    setBeautyEffect("Your looks have no effect");
     setSmartsEffect("You have no idea what you're doing");
     // human hand stuff
     // luck stuff 
@@ -469,16 +550,18 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
     useEffect(()=>{
       firstDeal.current = true;
-      setBeautyEffect("Are You Hot?");
+      setBeautyEffect("Are you hot?");
       setSmartsEffect("Are you Rainman?");
-      setLuckEffect("Are you Lucky?");
+      setLuckEffect("Are you lucky?");
       setGotLucky(false);
       setGotPretty(false);
       setGotSmart(false);
       dealCards();
+      setBetAmnt(0);
     },[reset]);                                       // re-render on reset
 
     useEffect(() => {
+      // smart effect stuff here. calculate odds of busting each draw
       const trueOdds = calculateBustOdds();
       const errorRange = ((10 - smartPoints) / 100) * (10-smartPoints);
       const min = trueOdds - errorRange;
@@ -486,7 +569,7 @@ function BlackJackTable({
       const filteredOdds = min + Math.random() * (max - min);
       const percentage = Math.round(filteredOdds * 100);
       console.log(trueOdds);
-      setSmartsEffect(`Odds of Busting: ${percentage}%`);
+      setSmartsEffect(`Odds of busting: ${percentage}%`);
       setGotSmart(true);
 
     }, [drawn]);
@@ -517,97 +600,5 @@ function BlackJackTable({
       </SafeAreaView>
     );
 }
-//-----------------------------------------------------------------------
-// Style Sheet For Welcome Page
-//-----------------------------------------------------------------------
-const styles = StyleSheet.create({
-  blackJackTableParent: {
-    flex: 1,
-    flexDirection: "column",
-    backgroundColor: "#071410",
-  },
-  svgBackground: {
-    position: "absolute",
-    bottom: -10,
-    opacity: 0.4,
-  },
-  centerTableWrapper : {
-    flex: 1,
-    padding:  10,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  deckOfCards : {
-    marginTop: 200,
-    marginRight: 150, 
-    position: "relative",
-  },
-  dealerDeckOfCards : {
-    flex: 1,
-    marginRight: 20, 
-    position: "relative",
-  },
-  playerDeckOfCards : {
-    flex: 1,
-    marginLeft: 20, 
-    position: "relative",
-  },
-  deckOfCardsText : {
-    flex: 1,
-    color: "#FFFFFF",
-    fontSize: 64,
-  },
-  cardStack : {
-    position: "absolute",
-  },
-  playerCardArea : {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#01C987",
-  },
-  dealerCardArea : {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 10,
-    borderColor: "#01C987",
-    position: "relative",
-  },
-  playerScoreText :{
-    color: "#01C987",
-    textAlign: "center",
-    fontSize: 100,
-    fontFamily: "Futura",
-  },
-  statsAreaAndInfo :{
-    flexDirection: "column",
-    padding: 20,
-    alignSelf: "flex-end",
-    zIndex: 10,
-    backgroundColor: "#001c13c2",
-    borderRadius: 10,
-  },
-  statsAreaText : {
-    color: "#cfffef",
-    textAlign: "flex-begin",
-    fontSize: 15,
-    fontFamily: "Futura",  
-    
-  },
-  statsAreaTextHighlighted : {
-    color: "#75ffd1",
-    textAlign: "flex-begin",
-    fontSize: 15,
-    fontFamily: "Futura",    
-  },
-  dealerScoreDisplayStyle : {
-    padding: 20,
-    alignSelf: "flex-start",
-    color: "#01C987",
-    textAlign: "center",
-    fontSize: 100,
-    fontFamily: "Futura"  
-  },
-});
 
 export default BlackJackTable;
