@@ -82,14 +82,9 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Futura",    
   },
-  statsAreaMoney:{
-    color: "#fff675",
-    textAlign: "flex-begin",
-    fontSize: 30,
-    fontFamily: "Futura",   
-  },
+
   statsAreaBet:{
-    color: "#537cf6",
+    color: "#fcfcfd",
     textAlign: "flex-begin",
     fontSize: 30,
     fontFamily: "Futura",   
@@ -105,17 +100,22 @@ export const styles = StyleSheet.create({
   moneyArea : {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "center",
-  },
-  betArea : {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
     borderWidth: 1,
     borderRadius: 10,
     borderColor: "#01C987",
     marginTop: 10,
+  },
+  statsAreaMoney:{
+    color: "#fff67557",
+    textAlign: "flex-begin",
+    fontSize: 55,
+    fontFamily: "Futura", 
+    alignSelf: "center",  
+  },
+  betArea : {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
   },
   addSign:{
     marginLeft: 10,

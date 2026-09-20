@@ -36,7 +36,7 @@ function BlackJackTable({
   const deckStart = createDeck();
   const defaultIconColor = "#02895c";
   const pressedIconColor = "#01C987";
-  const primaryColor = "#00ffaa";
+  const primaryColor = "#f3f8f6";
   const pressedColor = "#01C987";
 
   //-----------------------------------------------------------------------
@@ -551,8 +551,8 @@ function BlackJackTable({
     useEffect(()=>{
       firstDeal.current = true;
       setBeautyEffect("Are you hot?");
-      setSmartsEffect("Are you Rainman?");
       setLuckEffect("Are you lucky?");
+      setSmartsEffect("Can you count cards?");
       setGotLucky(false);
       setGotPretty(false);
       setGotSmart(false);
@@ -569,7 +569,8 @@ function BlackJackTable({
       const filteredOdds = min + Math.random() * (max - min);
       const percentage = Math.round(filteredOdds * 100);
       console.log(trueOdds);
-      setSmartsEffect(`Odds of busting: ${percentage}%`);
+      if(!firstDeal.current)
+        setSmartsEffect(`Odds of busting: ${percentage}%`);
       setGotSmart(true);
 
     }, [drawn]);
