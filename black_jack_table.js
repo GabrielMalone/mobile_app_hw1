@@ -64,6 +64,7 @@ function BlackJackTable({
   const [betAmnt, setBetAmnt] = useState(0);
   const [gotPretty, setGotPretty] = useState(false);
   const [gotSmart, setGotSmart] = useState(false);
+  const [broke, setBroke] = useState(false);
   const firstDeal = useRef(true);
   
   //-----------------------------------------------------------------------
@@ -284,7 +285,9 @@ function BlackJackTable({
           dealerShowCqrds();
           setPlayerScore("BUSTED");
           setMoney(money - pot);
-          
+          if (money - pot <= 0){
+            setBroke(true);
+          }
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
@@ -311,6 +314,9 @@ function BlackJackTable({
           dealerShowCqrds();
           setGameOver(true);
           setMoney(money - pot);
+          if (money - pot <= 0){
+            setBroke(true);
+          }
         } 
 
         break; 
@@ -500,6 +506,9 @@ function BlackJackTable({
       case playerScore < currentDealerScore:
         condition = "LOSE";
         setMoney(money - pot);
+        if (money - pot <= 0){
+            setBroke(true);
+          }
         break;
       default:
         break;
@@ -589,6 +598,10 @@ function BlackJackTable({
       dealCards();
       setBetAmnt(0);
       setPot(0);
+      console.log(`am I broke? ${broke}`);
+      if (broke){
+         navigation.navigate("Welcome");
+      }
     },[reset]);                                       // re-render on reset
 
     useEffect(() => {
