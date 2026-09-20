@@ -82,7 +82,6 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Futura",    
   },
-
   statsAreaBet:{
     color: "#fcfcfd",
     textAlign: "flex-begin",
@@ -106,13 +105,14 @@ export const styles = StyleSheet.create({
     marginTop: 10,
   },
   statsAreaMoney:{
+    flex: 1,
     color: "#fff67557",
-    textAlign: "flex-begin",
-    fontSize: 55,
+    fontSize: 35,
     fontFamily: "Futura", 
     alignSelf: "center",  
   },
   betArea : {
+    flex: 1,
     flexDirection: "row",
     alignItems: "center",
     alignSelf: "center",

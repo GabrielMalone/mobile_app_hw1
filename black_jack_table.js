@@ -38,6 +38,7 @@ function BlackJackTable({
   const pressedIconColor = "#01C987";
   const primaryColor = "#f3f8f6";
   const pressedColor = "#01C987";
+  const winMultiplier = 2;
 
   //-----------------------------------------------------------------------
   // UseState Related Content
@@ -59,6 +60,7 @@ function BlackJackTable({
   const [smartsEffect, setSmartsEffect] = useState("");
   const [drawn, setDrawn] = useState(false);
   const [money, setMoney] = useState(100);
+  const [pot, setPot] = useState(0);
   const [betAmnt, setBetAmnt] = useState(0);
   const [gotPretty, setGotPretty] = useState(false);
   const [gotSmart, setGotSmart] = useState(false);
@@ -79,6 +81,9 @@ function BlackJackTable({
     curBet += 10;
     if (curBet > money){
       curBet = money;
+    }
+    if (curBet < 0){
+      curBet = 0;
     }
     setBetAmnt(curBet);
   }
@@ -180,7 +185,7 @@ function BlackJackTable({
         <Text
         style={styles.statsAreaMoney}
         >
-          ${money}
+          ${money} | ${pot}
         </Text>
           <View
             style={styles.betArea}
@@ -278,11 +283,13 @@ function BlackJackTable({
           setGameOver(true);
           dealerShowCqrds();
           setPlayerScore("BUSTED");
+          setMoney(money - pot);
           
         } else if (score === 21) {
           console.log("Player Black Jack!");
           setPlayerScore("WIN");
           dealerShowCqrds();
+          setMoney(money + pot);
           setGameOver(true);
         } 
 
@@ -297,11 +304,13 @@ function BlackJackTable({
           console.log("dealer busted!");
           dealerShowCqrds();
           setGameOver(true);
+          setMoney(money + pot);
    
         } else if (score === 21) {
           console.log("dealer Black Jack!");
           dealerShowCqrds();
           setGameOver(true);
+          setMoney(money - pot);
         } 
 
         break; 
@@ -388,25 +397,35 @@ function BlackJackTable({
   };
   //-----------------------------------------------------------------------
   const drawCard = () => {
-
+    //---------------------------------------------------------------------
+    // bet effects here i think
+    //---------------------------------------------------------------------
+    setPot(pot + (betAmnt * winMultiplier));
+    setMoney(money - betAmnt);
+    //---------------------------------------------------------------------
     setDrawn(!drawn);
     setHitIconColor(pressedIconColor);
     setLuckEffect("no");
     setBeautyEffect("Your looks have no effect");
     setSmartsEffect("You have no idea what you're doing");
+    //---------------------------------------------------------------------
     // human hand stuff
-    // luck stuff 
-    // if lucky, find a card that can get you to blackjack (except aces)
+    //---------------------------------------------------------------------
     let curDeck = [...deck];
+    //---------------------------------------------------------------------
+    // luck stuff 
+    //---------------------------------------------------------------------
+    // if lucky, find a card that can get you to blackjack (except aces)
+    //---------------------------------------------------------------------
     let rndChance = Math.random();
     let luckChance = luckPoints / 10;
-
     if (rndChance < luckChance && Math.random() < 0.8){
         console.log("lucky draw!");
         curDeck = rollLuck([...deck]);
     }
+    //---------------------------------------------------------------------
     // beauty stuff
-    // distract dealer and you can see his first card
+    //---------------------------------------------------------------------
     rndChance = Math.random();
     let beautyChance = beautyPoints / 10;
 
@@ -419,14 +438,15 @@ function BlackJackTable({
       setBeautyEffect("Your flustered the Dealer!");
       setGotPretty(true);
     }
-
+    //---------------------------------------------------------------------
     let cardDrawn = curDeck.pop();
     cardDrawn.turned = true;
     const newPlayerHand = [...playerHand, cardDrawn];
     setPlayerHand(newPlayerHand);
     updateScore(newPlayerHand, "human");
-
+    //---------------------------------------------------------------------
     // dealer hand stuff
+    //---------------------------------------------------------------------
     cardDrawn = curDeck.pop();
     cardDrawn.turned = true;
     if (firstDeal.current){
@@ -438,11 +458,17 @@ function BlackJackTable({
       setDealerHand(newDealerHand);
       updateScore(newDealerHand, "dealer");
     }
+    //---------------------------------------------------------------------
+    // clean up
+    //---------------------------------------------------------------------
     setDeck([...curDeck]); 
+    setBetAmnt(0);
   }
   //-----------------------------------------------------------------------
   const stayAction =  () => {
     setStayIconColor(pressedIconColor);
+
+    // maybe can't bet on stay action 
 
     let currentDealerHand = [...dealerHand];
     let currentDeck = [...deck];
@@ -461,15 +487,19 @@ function BlackJackTable({
     switch (true){
       case currentDealerScore > 21:
         condition = "WIN";
+        setMoney(money + pot);
         break;
       case playerScore > currentDealerScore:
         condition = "WIN";
+        setMoney(money + pot);
         break;
       case playerScore === currentDealerScore:
         condition = "TIE";
+        setMoney(money + (pot/2));
         break;
       case playerScore < currentDealerScore:
         condition = "LOSE";
+        setMoney(money - pot);
         break;
       default:
         break;
@@ -558,6 +588,7 @@ function BlackJackTable({
       setGotSmart(false);
       dealCards();
       setBetAmnt(0);
+      setPot(0);
     },[reset]);                                       // re-render on reset
 
     useEffect(() => {
@@ -572,7 +603,6 @@ function BlackJackTable({
       if(!firstDeal.current)
         setSmartsEffect(`Odds of busting: ${percentage}%`);
       setGotSmart(true);
-
     }, [drawn]);
 
     return (
