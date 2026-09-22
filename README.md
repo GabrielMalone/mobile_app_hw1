@@ -7,7 +7,7 @@ Rules:
 
 Like regular black jack but you draw one card at a time. 
 You may bet after each hit. 
-If you next move is a stay, any bet made prior to that move does not count. 
+If you next move is a stay, any bet made just prior to that move does not count. 
 
 In addition you have the following stat options:
     1 - Smarts. The smarter you are the better at calculating the odds that the next hit would lead to a bust. 
