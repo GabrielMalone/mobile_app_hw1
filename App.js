@@ -31,9 +31,21 @@ export default function App() {
     // can be a switch statement
     switch(action.statToChange){
       case 'playerName'   : return {...state, playerName: action.amount};
-      case 'smartPoints'  : return {...state, smartPoints: (state.smartPoints + action.amount)};
-      case 'luckPoints'   : return {...state, luckPoints: (state.luckPoints + action.amount)};
-      case 'beautyPoints' : return {...state, beautyPoints: (state.beautyPoints + action.amount)};
+      case 'smartPoints'  : 
+        if (state.smartPoints + action.amount > 10 || state.smartPoints + action.amount < 0) {
+          return state;
+        }
+        return {...state, smartPoints: (state.smartPoints + action.amount)};
+      case 'luckPoints'   : 
+        if (state.luckPoints + action.amount > 10 || state.luckPoints + action.amount < 0) {
+          return state;
+        }
+        return {...state, luckPoints: (state.luckPoints + action.amount)};
+      case 'beautyPoints' : 
+        if (state.beautyPoints + action.amount > 10 || state.beautyPoints + action.amount < 0) {
+          return state;
+        }
+        return {...state, beautyPoints: (state.beautyPoints + action.amount)};
       default: return state;
     }
   }
