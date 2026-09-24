@@ -14,14 +14,16 @@ import Begin from './assets/player_craeation_page/start.svg'
 
 function PlayerCreation({
     navigation,
-    playerName,
-    setPlayerName,
-    smartPoints,
-    setSmartPoints,
-    beautyPoints,
-    setBeautyPoints,
-    luckPoints,
-    setLuckPoints
+    // playerName,
+    // setPlayerName,
+    // smartPoints,
+    // setSmartPoints,
+    // beautyPoints,
+    // setBeautyPoints,
+    // luckPoints,
+    // setLuckPoints
+    state,
+    dispatch
 }) {
 
   const primaryColor = "#00ffaa";
@@ -34,11 +36,9 @@ function PlayerCreation({
   //-----------------------------------------------------------------------
   // UseState Related Content
   //-----------------------------------------------------------------------
-
   const [nameButtonColor, setNameButtonColor] = useState(playColor);
   const [playButtonColor, setPlayButtonColor] = useState(playColor);
   const [statPoints, setStatPoints] = useState(maxPoints);
-
 
   //-----------------------------------------------------------------------
   // Player Creation Related Content / Methods
@@ -110,32 +110,33 @@ function PlayerCreation({
   const playerNameField = 
       <TextInput
         style={styles.nameInputText}
-        value={playerName}
-        onChangeText={setPlayerName}
+        value={state.playerName}
+        onChangeText={
+          (name) => {
+            dispatch({statToChange: "playerName", amount: name});
+          }}
         placeholder="Enter Your Name"
         placeholderTextColor="#01C987"
       />
-
   //-----------------------------------------------------------------------
 
-  const increaseDecreaseAmnt = (points, setPoints) => {
+  const increaseDecreaseAmnt = (statToChange) => {
   
     const handleAdd = () => {
       if (statPoints <= 0){
         return;
       }
-      setPoints(points + 1);
+      dispatch({statToChange, amount: 1});
       setStatPoints(statPoints - 1);
     }
 
     const handleSubtract = () => {
-      if (points <= 0){
+      if (state[statToChange] <= 0){
         return;
       }
         setStatPoints(statPoints + 1);
-        setPoints(points - 1);
+        dispatch({statToChange, amount: -1});
       }
-    
     
     // pressed is a deconstructed field if you wrap a child of a 
     // pressable in a function you can get the info about that child.   
@@ -173,9 +174,8 @@ function PlayerCreation({
         }
         </Pressable>
     
-
         <Text style={styles.assignedPoints}>
-          {points}
+          {state[statToChange]}
         </Text>
         
       </View>
@@ -250,7 +250,7 @@ function PlayerCreation({
                   Smarts
                 </Text>
               </View> 
-                {increaseDecreaseAmnt(smartPoints, setSmartPoints)}
+                {increaseDecreaseAmnt("smartPoints")}
               </View>
              
               <View style={styles.buttonRow}>
@@ -260,7 +260,7 @@ function PlayerCreation({
                     Beauty
                   </Text>                
                 </View>
-                  {increaseDecreaseAmnt(beautyPoints, setBeautyPoints)} 
+                  {increaseDecreaseAmnt("beautyPoints")} 
               </View>
 
               <View style={styles.buttonRow}>
@@ -270,7 +270,7 @@ function PlayerCreation({
                     Luck
                   </Text>     
                 </View>
-                  {increaseDecreaseAmnt(luckPoints, setLuckPoints)} 
+                  {increaseDecreaseAmnt("luckPoints")} 
               </View>
 
              {beginButton}

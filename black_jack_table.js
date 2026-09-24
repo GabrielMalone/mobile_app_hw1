@@ -20,13 +20,11 @@ import ResetIcon from "./assets/table_assets/reset_icon";
 // intelligence modifier you can get accurate liklihood of the next card being less than bust
 
 function BlackJackTable({
-
-  playerName,
-  smartPoints,
+  state,
   navigation,
-  beautyPoints,
-  luckPoints,
-
+  // smartPoints,
+  // beautyPoints,
+  // luckPoints,
   }) {
 
   const playingCardWidth = 120;
@@ -39,6 +37,12 @@ function BlackJackTable({
   const primaryColor = "#f3f8f6";
   const pressedColor = "#01C987";
   const winMultiplier = 2;
+  // just reading from values here, dont need dispatch
+  const smartPoints = state["smartPoints"];
+  const beautyPoints = state["beautyPoints"];
+  const luckPoints = state["luckPoints"];
+  const playerName = state["playerName"];
+
 
   //-----------------------------------------------------------------------
   // UseState Related Content
@@ -162,6 +166,9 @@ function BlackJackTable({
   //-----------------------------------------------------------------------
   const statsArea = 
     <View style={styles.statsAreaAndInfo}>
+      <Text style={styles.welcomePlayer}>
+        Welcome, {playerName}
+      </Text>
       <Text style={gotPretty ? 
         styles.statsAreaTextHighlighted : 
         styles.statsAreaText}>

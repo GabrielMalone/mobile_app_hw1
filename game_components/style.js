@@ -122,5 +122,11 @@ export const styles = StyleSheet.create({
   },
   minusSign:{
     marginLeft: 5,
+  },
+  welcomePlayer:{
+    color: "#fdfdfcc4",
+    fontSize: 20,
+    fontFamily: "Futura", 
+    alignSelf: "center",  
   }
 });

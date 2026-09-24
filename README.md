@@ -2,12 +2,12 @@ Black Jack +
 Gabriel Malone
 gmalone1@uno.edu
 
-
 Rules:
 
 Like regular black jack but you draw one card at a time. 
-You may bet after each hit. 
-If you next move is a stay, any bet made just prior to that move does not count. 
+You may bet at any time. 
+If you next move is a stay, any bet made just prior to that stay does not count. 
+You can choose never to bet. 
 
 In addition you have the following stat options:
     1 - Smarts. The smarter you are the better at calculating the odds that the next hit would lead to a bust. 
